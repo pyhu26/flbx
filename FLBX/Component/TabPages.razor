@@ -1,0 +1,33 @@
+﻿
+
+@using Syncfusion.Blazor.Buttons
+@inject MenuService menuService
+
+<h3>TabPages</h3>
+
+<input type="text" />
+
+<SfButton OnClick="@GetMenu"></SfButton>
+
+@if (Menus != null)
+{
+    foreach (var menu in Menus)
+    {
+        <div> @menu.Name </div>
+    }
+}
+else
+{
+        <div> Loading...</div>
+}
+
+@code {
+
+    public List<Menu> Menus { get; set; }
+    public async Task GetMenu()
+    {
+
+        await menuService.GetMenus();
+        this.Menus = menuService.Menus;
+    }
+}

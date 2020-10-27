@@ -1,0 +1,106 @@
+﻿@page "/FxTabs"
+@page "/FxTabs/{MenuId}"
+@inject MenuService menuService
+
+@using Syncfusion.Blazor
+@using Syncfusion.Blazor.Navigations
+@using Syncfusion.Blazor.Buttons
+
+@inject FxUtil fxUtil
+
+@if (MenuId != null)
+{
+    <div>@MenuId</div>
+}
+
+<SfButton OnClick="AddItemClick" Content="Add Tab"></SfButton>
+<SfButton OnClick="RemoveItemClick" Content="Remove Last Tab"></SfButton>
+<br />
+<SfTab @ref="Tab" LoadOn="ContentLoad.Demand" ShowCloseButton="true" >
+    <TabAnimationSettings>
+        <TabAnimationPrevious Effect="AnimationEffect.None"></TabAnimationPrevious>
+        <TabAnimationNext Effect="AnimationEffect.None"></TabAnimationNext>
+    </TabAnimationSettings>
+    <TabItems>
+      
+        @* sample. *@
+        @*<TabItem Content="Los Angeles is a sprawling Southern California city and the center of the nation’s film and television industry. Near its iconic Hollywood sign, studios such as Paramount Pictures, Universal and Warner Brothers offer behind-the-scenes tours. On Hollywood Boulevard, TCL Chinese Theatre displays celebrities’ hand- and footprints, the Walk of Fame honors thousands of luminaries and vendors sell maps to stars’ homes.">
+            <ChildContent>
+                <TabHeader Text="Los Angeles"></TabHeader>
+            </ChildContent>
+        </TabItem>*@
+      
+    </TabItems>
+</SfTab>
+
+
+
+
+@code{
+
+    [Parameter]
+    public string MenuId { get; set; }
+
+    public TabPages tabPage = new TabPages();
+    SfTab Tab;
+    List<TabItem> TabData;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+
+        AddItemClick();
+    }
+
+    public void AddItemClick()
+    {
+        Menu currentMenu = menuService.Menus.Where(r => r.Id.Equals(this.MenuId)).FirstOrDefault();
+
+        if (currentMenu == null)
+        {
+            throw new NotFindMenuException("Can not find menu information from Database. Please check menu table");
+        }
+        else
+        {
+            TabItem tabItem = new TabItem()
+            {
+                Header = new TabHeader() { Text = currentMenu.Name } ,
+                ContentTemplate = fxUtil.CreateComponent(currentMenu.Page)
+            };
+
+
+            //열었던 메뉴라면 해당 Tab으로 이동
+
+            bool isContain = Tab.Items.Where(r => r.Header.Text == currentMenu.Name).ToList().Count > 0;
+
+
+            if (isContain)
+            {
+                TabItem openedItem = Tab.Items.Where(r => r.Header.Text == currentMenu.Name).FirstOrDefault();
+
+                Tab.Select(openedItem);
+
+            }
+            //새로 오픈하는 메뉴
+            else
+            {
+
+                TabData = new List<TabItem>() {tabItem};
+                Tab.AddTab(TabData, 0);
+            }
+        }
+    }
+
+    public void RemoveItemClick()
+    {
+        Tab.RemoveTab(Tab.Items.Count - 1);
+    }
+}
+
+<style>
+    .e-content .e-item {
+        font-size: 12px;
+        margin: 10px;
+        text-align: justify;
+    }
+</style>
