@@ -8,14 +8,6 @@
 
 @inject FxUtil fxUtil
 
-@if (MenuId != null)
-{
-    <div>@MenuId</div>
-}
-
-<SfButton OnClick="AddItemClick" Content="Add Tab"></SfButton>
-<SfButton OnClick="RemoveItemClick" Content="Remove Last Tab"></SfButton>
-<br />
 <SfTab @ref="Tab" LoadOn="ContentLoad.Demand" ShowCloseButton="true" >
     <TabAnimationSettings>
         <TabAnimationPrevious Effect="AnimationEffect.None"></TabAnimationPrevious>
@@ -76,19 +68,27 @@
 
             if (isContain)
             {
-                TabItem openedItem = Tab.Items.Where(r => r.Header.Text == currentMenu.Name).FirstOrDefault();
-
-                Tab.Select(openedItem);
-
+                int menuIndex = GetMenuIndex(currentMenu.Name, Tab.Items);
+                Tab.Select(menuIndex);
             }
             //새로 오픈하는 메뉴
             else
             {
-
                 TabData = new List<TabItem>() {tabItem};
                 Tab.AddTab(TabData, 0);
             }
         }
+    }
+
+    public int GetMenuIndex(string menuName, List<TabItem> tabItems )
+    {
+        for (int i = 0; i < tabItems.Count; i++)
+        {
+            if (tabItems[i].Header.Text.Equals(menuName))
+                return i;
+        }
+
+        return -1;
     }
 
     public void RemoveItemClick()
