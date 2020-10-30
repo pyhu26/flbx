@@ -19,7 +19,7 @@ namespace FLBX
             builder.RootComponents.Add<App>("app");
 
             #region Syncfusion 등록
-            builder.Services.AddSyncfusionBlazor(true);
+            builder.Services.AddSyncfusionBlazor();
             #endregion
 
             #region HttpClient 생성
