@@ -1,0 +1,89 @@
+﻿@inject MenuService menuService
+
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+    <!-- Sidebar - Brand -->
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/">
+        <div class="sidebar-brand-text mx-3">#FLBX</div>
+    </a>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider my-0">
+
+    @if (this.Menus1st == null)
+    {
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Menu Loading..
+            </NavLink>
+        </li>
+    }
+    else
+    {
+        <!--level1 menu-->
+        foreach (var menu1st in this.Menus1st)
+        {
+            <li class="nav-item active">
+                <a class="nav-link" href="#" data-toggle="collapse" data-target="#@menu1st.Id" aria-expanded="true" aria-controls="@menu1st.Id">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span >@menu1st.Name</span> 
+                </a>
+
+                <div id="@menu1st.Id" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <!--level2 menu-->
+                        @foreach (var menu2nd in this.Menus2nd.Where(r => r.Parent.Equals(menu1st.Id)))
+                        {
+                            <h6 class="collapse-header">@menu2nd.Name</h6>
+                            <!--level3 menu-->
+                            @foreach (var menu3rd in this.Menus3rd.Where(r => r.Parent.Equals(menu2nd.Id)))
+                            {
+                                <a class="collapse-item" href="FxTabs/@menu3rd.Id">@menu3rd.Name</a>
+                            }
+                    }
+                    </div>
+                </div>
+            </li>
+        }
+     }
+
+    <!-- Divider -->
+    <hr class="sidebar-divider d-none d-md-block">
+
+    <!-- Sidebar Toggler (Sidebar) -->
+    <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+    </div>
+
+</ul>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    protected override Task OnInitializedAsync()
+    {
+        base.OnInitializedAsync();
+
+        return GetMenu();
+    }
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+    public List<Menu> Menus1st { get; set; }
+    public List<Menu> Menus2nd { get; set; }
+    public List<Menu> Menus3rd { get; set; }
+
+    public async Task GetMenu()
+    {
+
+        await menuService.GetMenus();
+        this.Menus1st = menuService.Menus.Where(r => r.Level == 0).ToList();
+        this.Menus2nd = menuService.Menus.Where(r => r.Level == 1).ToList();
+        this.Menus3rd = menuService.Menus.Where(r => r.Level == 2).ToList();
+    }
+}
