@@ -1,0 +1,97 @@
+﻿@namespace FLBX.Shared
+
+@if (!isModalType)
+{
+    <div class="@classNames">
+        <div id="loader" class="sb-loading">
+            <svg class="circular" height="40" width="40">
+                <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="6" stroke-miterlimit="10"></circle>
+            </svg>
+        </div>
+    </div>
+}
+else
+{
+    <div class="@classNames"></div>
+}
+
+@code {
+    #region common
+    public const string SPACE = " ";
+    public const string VISIBLE = "sf-visible";
+    public const string HIDDEN = "sf-hidden";
+    #endregion
+
+    #region Spinner
+    public const string MODAL_CLASS = "sf-modal";
+    #endregion
+
+    private string classNames = "sb-body-overlay";
+    private bool isModalType { get; set; }
+
+    /// <summary>
+    /// Add a class to the existing string content.
+    /// </summary>
+    /// <param name="prevClass">Previous class list in string format.</param>
+    /// <param name="className">Class name needs to be added in the string content.</param>
+    /// <returns>Returns class string.</returns>
+    internal static string AddClass(string prevClass, string className)
+    {
+        var finalClass = string.IsNullOrEmpty(prevClass) ? string.Empty : prevClass.Trim();
+        finalClass = finalClass.Contains(className) ? finalClass : finalClass + SPACE + className;
+        return finalClass;
+    }
+
+    /// <summary>
+    /// Remove a class from the existing string content.
+    /// </summary>
+    /// <param name="prevClass">Previous class list in string format.</param>
+    /// <param name="className">Class name needs to be removed in the string content.</param>
+    /// <returns>Returns class string.</returns>
+    public static string RemoveClass(string prevClass, string className)
+    {
+        var finalClass = string.IsNullOrEmpty(prevClass) ? string.Empty : prevClass.Trim();
+        finalClass = finalClass.Contains(className) ? prevClass.Replace(className, string.Empty) : finalClass;
+        return finalClass;
+    }
+
+
+    /// <summary>
+    /// Hides the Spinner component.
+    /// </summary>
+    public void Hide()
+    {
+        classNames = AddClass(classNames, HIDDEN);
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Shows the Spinner component.
+    /// </summary>
+    public void Show()
+    {
+        classNames = RemoveClass(classNames, HIDDEN);
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Sets model layout to the app background to prevent mouse interaction.
+    /// </summary>
+    /// <param name="isModelSpinner">Disable or enable model layout based on the input.</param>
+    public void ShowModalSpinner(bool isModelSpinner = true)
+    {
+        isModalType = isModelSpinner;
+        if (isModelSpinner)
+        {
+            classNames = AddClass(classNames, MODAL_CLASS);
+            classNames = RemoveClass(classNames, HIDDEN);
+        }
+        else
+        {
+            classNames = RemoveClass(classNames, MODAL_CLASS);
+            classNames = AddClass(classNames, HIDDEN);
+        }
+        StateHasChanged();
+    }
+}
+
