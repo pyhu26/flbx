@@ -69,6 +69,10 @@ body {
   background-color: #fff;
 }
 
+html, body {
+    height: 100%;
+}
+
 [tabindex="-1"]:focus:not(:focus-visible) {
   outline: 0 !important;
 }

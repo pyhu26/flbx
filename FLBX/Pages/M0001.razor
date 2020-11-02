@@ -17,14 +17,14 @@
                             <div class=" col-lg-10 col-md-10">
 
                             </div>
-                           
+
                             <div class=" col-lg-1 col-md-1">
 
                                 <SfButton IsPrimary="true">조회</SfButton>
                             </div>
                             <div class=" col-lg-1 col-md-1">
                                 <SfButton IsPrimary="true">Lot생성</SfButton>
-                            </div>                      
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -39,19 +39,19 @@
 
                         <SfTextBox Placeholder="이름:" FloatLabelType="@FloatLabelType.Auto"></SfTextBox>
                     </div>
-                    <div  class=" col-lg-3 col-md-3">
+                    <div class=" col-lg-3 col-md-3">
                         <SfDropDownList TItem="string" TValue="string" PopupHeight="230px" Placeholder="제품">
                         </SfDropDownList>
                         <SfTextBox Placeholder="ProductOrder.." FloatLabelType="@FloatLabelType.Auto"></SfTextBox>
                     </div>
                     <div class=" col-lg-6 col-md-6">
-                        
+
                     </div>
-  
+
 
                 </div>
 
-               
+
 
             </SfCard>
 
@@ -69,10 +69,10 @@
                                 </GridColumns>
                             </SfGrid>
                         </SfCard>
-                        
+
                     </div>
                     <div class="col-lg-3 clo-md-3">
-                        <SfCard >
+                        <SfCard>
                             <CardHeader Title="Create Lot"></CardHeader>
                             <div id="M0001_wrapper">
 
@@ -83,19 +83,19 @@
                                 <SfTextBox Placeholder="잔여Qty" FloatLabelType="@FloatLabelType.Auto"></SfTextBox>
                             </div>
                             <div id="M0001_wrapper">
-                               <b>Lot개수:</b>
-                                <SfNumericTextBox  TValue="double?" Value=10></SfNumericTextBox>
+                                <b>Lot개수:</b>
+                                <SfNumericTextBox TValue="double?" Value=10></SfNumericTextBox>
                             </div>
                             <div id="M0001_wrapper">
                                 <b>Lot별Qty</b>
-                                <SfNumericTextBox  TValue="double?" Value=10></SfNumericTextBox>
+                                <SfNumericTextBox TValue="double?" Value=10></SfNumericTextBox>
                             </div>
                             <div id="M0001_wrapper">
-                                
-                                <SfTextBox  Placeholder="Prefix Keyword:" FloatLabelType="@FloatLabelType.Auto"></SfTextBox>
+
+                                <SfTextBox Placeholder="Prefix Keyword:" FloatLabelType="@FloatLabelType.Auto"></SfTextBox>
                             </div>
                             <div id="M0001_wrapper">
-                            
+
                                 <SfTextBox Placeholder="Remark:" FloatLabelType="@FloatLabelType.Auto"></SfTextBox>
                             </div>
                             <div id="M0001_wrapper">
@@ -104,12 +104,12 @@
                             <div id="M0001_wrapper">
                                 <SfButton IsPrimary="true">Lot임시 생성</SfButton>
                             </div>
-                            
+
                         </SfCard>
                     </div>
                     <div class="col-lg-6 clo-md-6">
                         <SfCard>
-                            <CardHeader Title="Lot"/>
+                            <CardHeader Title="Lot" />
                             <SfGrid DataSource="@GridDataLot">
                                 <GridColumns>
                                     <GridColumn Field=@nameof(Lot.Id) IsPrimaryKey="true" HeaderText="LotId" Width="50"></GridColumn>
@@ -120,18 +120,18 @@
                                 </GridColumns>
                             </SfGrid>
                         </SfCard>
-                       
+
 
                     </div>
                 </div>
-               
+
             </SfCard>
         </div>
-      
+
     </div>
 </div>
 <style>
-    #ButtonCard{
+    #ButtonCard {
         height: 50px;
         margin: 16px;
     }
@@ -145,21 +145,23 @@
         height: 100%;
         margin: 10px;
         padding-top: 10px;
-        max-height:600px;
-        min-height:500px;
+        max-height: 600px;
+        min-height: 500px;
     }
 
     .row {
         width: 100%;
         margin: auto;
     }
+
     #M0001_wrapper {
         max-width: 300px;
-        margin:2px;
+        margin: 2px;
         padding-top: 2px;
-        padding-bottom:2px;
+        padding-bottom: 2px;
     }
 </style>
+
 
 @code {
     void Attach(RenderHandle renderHandle) { }
@@ -168,7 +170,7 @@
 
     public List<WorkOrderDetails> GridData { get; set; }
     public List<Lot> GridDataLot { get; set; }
-    
+
     protected override void OnInitialized()
     {
         GridData = WorkOrderDetails.GetAllRecords();
