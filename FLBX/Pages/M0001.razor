@@ -5,161 +5,125 @@
 @using Syncfusion.Blazor.Calendars
 @using Syncfusion.Blazor.Inputs
 @using Syncfusion.Blazor.Cards
+@using Syncfusion.Blazor.Layouts
 
-<div class="control-section">
-    <div>
-        <div class="col-lg-12 col-md-12">
-            <SfCard ID="ButtonCard">
-                <div class="button-section">
-                    <div id="button-control">
-                        <div class="row">
 
-                            <div class=" col-lg-10 col-md-10">
-
-                            </div>
-                           
-                            <div class=" col-lg-1 col-md-1">
-
-                                <SfButton IsPrimary="true">조회</SfButton>
-                            </div>
-                            <div class=" col-lg-1 col-md-1">
-                                <SfButton IsPrimary="true">Lot생성</SfButton>
-                            </div>                      
-                        </div>
-                    </div>
+<div class="container">
+    <div class="card">
+        <div class="card">
+            <div class="row">
+                <div class=" col-lg-10 col-md-10">
                 </div>
-            </SfCard>
+                <div class=" col-lg-1 col-md-1 my-1">
+                    <SfButton IsPrimary="true">조회</SfButton>
+                </div>
+                <div class=" col-lg-1 col-md-1 my-1">
+                    <SfButton IsPrimary="true">Lot생성</SfButton>
+                </div>
+            </div>
+        </div>
 
-            <SfCard ID="SearchCard">
-
+        <div class="card">
+            <h10 class="card-header py-1">Work Order 조회조건</h10>
+            <div class="card-body py-2">
                 <div class="row">
                     <div class=" col-lg-3 col-md-3">
-
                         <SfDateRangePicker Placeholder="생산시작일 From To"></SfDateRangePicker>
-
                         <SfTextBox Placeholder="이름:" FloatLabelType="@FloatLabelType.Auto"></SfTextBox>
                     </div>
-                    <div  class=" col-lg-3 col-md-3">
+                    <div class=" col-lg-3 col-md-3">
                         <SfDropDownList TItem="string" TValue="string" PopupHeight="230px" Placeholder="제품">
                         </SfDropDownList>
                         <SfTextBox Placeholder="ProductOrder.." FloatLabelType="@FloatLabelType.Auto"></SfTextBox>
                     </div>
                     <div class=" col-lg-6 col-md-6">
-                        
-                    </div>
-  
-
-                </div>
-
-               
-
-            </SfCard>
-
-            <SfCard ID="GridCard">
-                <div id="content" class="row">
-                    <div class="col-lg-3 clo-md-3">
-                        <SfCard>
-                            <CardHeader Title="WorkOrder"></CardHeader>
-                            <SfGrid DataSource="@GridData">
-                                <GridColumns>
-                                    <GridColumn Field=@nameof(WorkOrderDetails.Id) IsPrimaryKey="true" HeaderText="WorkOrderId" Width="100"></GridColumn>
-                                    <GridColumn Field=@nameof(WorkOrderDetails.WorkOrder) HeaderText="Name" TextAlign="TextAlign.Right" Width="50"></GridColumn>
-                                    <GridColumn Field=@nameof(WorkOrderDetails.Qty) HeaderText="수량" Width="50"></GridColumn>
-                                    <GridColumn Field=@nameof(WorkOrderDetails.Pruduct) HeaderText="Product" Width="80"></GridColumn>
-                                </GridColumns>
-                            </SfGrid>
-                        </SfCard>
-                        
-                    </div>
-                    <div class="col-lg-3 clo-md-3">
-                        <SfCard >
-                            <CardHeader Title="Create Lot"></CardHeader>
-                            <div id="M0001_wrapper">
-
-                                <SfTextBox Placeholder="WorkOrder" FloatLabelType="@FloatLabelType.Auto"></SfTextBox>
-                            </div>
-                            <div id="M0001_wrapper">
-
-                                <SfTextBox Placeholder="잔여Qty" FloatLabelType="@FloatLabelType.Auto"></SfTextBox>
-                            </div>
-                            <div id="M0001_wrapper">
-                               <b>Lot개수:</b>
-                                <SfNumericTextBox  TValue="double?" Value=10></SfNumericTextBox>
-                            </div>
-                            <div id="M0001_wrapper">
-                                <b>Lot별Qty</b>
-                                <SfNumericTextBox  TValue="double?" Value=10></SfNumericTextBox>
-                            </div>
-                            <div id="M0001_wrapper">
-                                
-                                <SfTextBox  Placeholder="Prefix Keyword:" FloatLabelType="@FloatLabelType.Auto"></SfTextBox>
-                            </div>
-                            <div id="M0001_wrapper">
-                            
-                                <SfTextBox Placeholder="Remark:" FloatLabelType="@FloatLabelType.Auto"></SfTextBox>
-                            </div>
-                            <div id="M0001_wrapper">
-                                <SfTextBox Placeholder="Discription:" FloatLabelType="@FloatLabelType.Auto"></SfTextBox>
-                            </div>
-                            <div id="M0001_wrapper">
-                                <SfButton IsPrimary="true">Lot임시 생성</SfButton>
-                            </div>
-                            
-                        </SfCard>
-                    </div>
-                    <div class="col-lg-6 clo-md-6">
-                        <SfCard>
-                            <CardHeader Title="Lot"/>
-                            <SfGrid DataSource="@GridDataLot">
-                                <GridColumns>
-                                    <GridColumn Field=@nameof(Lot.Id) IsPrimaryKey="true" HeaderText="LotId" Width="50"></GridColumn>
-                                    <GridColumn Field=@nameof(Lot.Name) HeaderText="이름" TextAlign="TextAlign.Right" Width="50"></GridColumn>
-                                    <GridColumn Field=@nameof(Lot.Qty) HeaderText="수량" Width="50"></GridColumn>
-                                    <GridColumn Field=@nameof(Lot.Segment) HeaderText="공정" Width="80"></GridColumn>
-                                    <GridColumn Field=@nameof(Lot.Equitment) HeaderText="설비" Width="80"></GridColumn>
-                                </GridColumns>
-                            </SfGrid>
-                        </SfCard>
-                       
-
                     </div>
                 </div>
-               
-            </SfCard>
+            </div>
         </div>
-      
+
+        <div class="col-lg-12 ">
+                      
+                    <SfSplitter  Width="100%" SeparatorSize="4">
+                        <SplitterPanes>
+                            <SplitterPane Size="25%" Min="60px">
+                                <ContentTemplate>
+                                    <div class="card">
+                                        <h10 class="card-header py-1">WorkOrder</h10>
+                                        <SfGrid DataSource="@GridData">
+                                            <GridColumns>
+                                                <GridColumn Field=@nameof(WorkOrderDetails.Id) IsPrimaryKey="true" HeaderText="WorkOrderId" Width="100"></GridColumn>
+                                                <GridColumn Field=@nameof(WorkOrderDetails.WorkOrder) HeaderText="Name" TextAlign="TextAlign.Right" Width="50"></GridColumn>
+                                                <GridColumn Field=@nameof(WorkOrderDetails.Qty) HeaderText="수량" Width="50"></GridColumn>
+                                                <GridColumn Field=@nameof(WorkOrderDetails.Pruduct) HeaderText="Product" Width="80"></GridColumn>
+                                            </GridColumns>
+                                        </SfGrid>
+                                    </div>
+                                </ContentTemplate>
+                            </SplitterPane>
+                            <SplitterPane Size="25%" Min="60px">
+                                <ContentTemplate>
+                                    <div class="card">
+                                        <h10 class="card-header py-1">Create Lot</h10>
+                                        <div>
+                                            <SfTextBox Placeholder="WorkOrder" FloatLabelType="@FloatLabelType.Auto"></SfTextBox>
+                                        </div>
+                                        <div>
+                                            <SfTextBox Placeholder="잔여Qty" FloatLabelType="@FloatLabelType.Auto"></SfTextBox>
+                                        </div>
+
+
+                                        <div>
+                                            <SfNumericTextBox Format="Lot개수:###.##" TValue="double?" Value=10 FloatLabelType="@FloatLabelType.Always"></SfNumericTextBox>
+                                        </div>
+
+
+
+                                        <div>
+                                            <SfNumericTextBox Format="Lot별Qty:###.##" TValue="double?" Value=10 FloatLabelType="@FloatLabelType.Always"></SfNumericTextBox>
+                                        </div>
+
+                                        <div>
+                                            <SfTextBox Placeholder="Prefix Keyword:" FloatLabelType="@FloatLabelType.Auto"></SfTextBox>
+                                        </div>
+                                        <div>
+
+                                            <SfTextBox Placeholder="Remark:" FloatLabelType="@FloatLabelType.Auto"></SfTextBox>
+                                        </div>
+                                        <div>
+                                            <SfTextBox Placeholder="Discription:" FloatLabelType="@FloatLabelType.Auto"></SfTextBox>
+                                        </div>
+                                        <div>
+                                            <SfButton IsPrimary="true">Lot임시 생성</SfButton>
+                                        </div>
+                                    </div>
+                                </ContentTemplate>
+                            </SplitterPane>
+                            <SplitterPane Size="50%" Min="60px">
+                                <ContentTemplate>
+                                    <div class="card">
+                                        <h10 class="card-header py-1">LOT</h10>
+                                        <SfGrid DataSource="@GridDataLot">
+                                            <GridColumns>
+                                                <GridColumn Field=@nameof(Lot.Id) IsPrimaryKey="true" HeaderText="LotId" Width="50"></GridColumn>
+                                                <GridColumn Field=@nameof(Lot.Name) HeaderText="이름" TextAlign="TextAlign.Right" Width="50"></GridColumn>
+                                                <GridColumn Field=@nameof(Lot.Qty) HeaderText="수량" Width="50"></GridColumn>
+                                                <GridColumn Field=@nameof(Lot.Segment) HeaderText="공정" Width="80"></GridColumn>
+                                                <GridColumn Field=@nameof(Lot.Equitment) HeaderText="설비" Width="80"></GridColumn>
+                                            </GridColumns>
+                                        </SfGrid>
+                                    </div>
+                                </ContentTemplate>
+                            </SplitterPane>
+                        </SplitterPanes>
+                    </SfSplitter>
+         
+
+        </div>
     </div>
 </div>
-<style>
-    #ButtonCard{
-        height: 50px;
-        margin: 16px;
-    }
 
-    #SearchCard {
-        height: 150px;
-        margin: 16px;
-    }
 
-    #GridCard {
-        height: 100%;
-        margin: 10px;
-        padding-top: 10px;
-        max-height:600px;
-        min-height:500px;
-    }
-
-    .row {
-        width: 100%;
-        margin: auto;
-    }
-    #M0001_wrapper {
-        max-width: 300px;
-        margin:2px;
-        padding-top: 2px;
-        padding-bottom:2px;
-    }
-</style>
 
 @code {
     void Attach(RenderHandle renderHandle) { }
@@ -168,7 +132,7 @@
 
     public List<WorkOrderDetails> GridData { get; set; }
     public List<Lot> GridDataLot { get; set; }
-    
+
     protected override void OnInitialized()
     {
         GridData = WorkOrderDetails.GetAllRecords();
