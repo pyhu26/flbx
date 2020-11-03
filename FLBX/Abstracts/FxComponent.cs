@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace FLBX
 {
-    public class AbstractFxFilter : IFxComponent
+    public class AbstractFxFilter 
     {
         public AbstractFxFilter(ColSpan colSpan)
         {
@@ -13,21 +13,6 @@ namespace FLBX
         }
         
         public ColSpan ColSpanValue { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public string AuthorityLevel { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-        public void GetValue()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetAuthority()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetRegion()
-        {
-            throw new NotImplementedException();
-        }
+        
     }
 }
