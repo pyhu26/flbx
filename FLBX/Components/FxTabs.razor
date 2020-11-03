@@ -47,7 +47,11 @@
     public void AddItemClick()
     {
         if (string.IsNullOrEmpty(this.MenuId)) return;
-        if (menuService == null || menuService.Menus.Count <= 0) return;
+        if (menuService is MenuService m && (m.Menus == null || m.Menus.Count <= 0))
+        {
+            System.Diagnostics.Debug.WriteLine("Can not find menu");
+            return;
+        }
 
         Menu currentMenu = menuService.Menus.Where(r => r.Id.Equals(this.MenuId)).FirstOrDefault();
 
