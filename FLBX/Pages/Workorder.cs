@@ -22,13 +22,13 @@ namespace FLBX.Pages
         public static List<WorkOrderDetails> GetAllRecords()
         {
             List<WorkOrderDetails> WorkOrder = new List<WorkOrderDetails>();
-            WorkOrder.Add(new WorkOrderDetails(11109,"P/O:11109",200,"CBJODFDFDFD"));
-            WorkOrder.Add(new WorkOrderDetails(11109, "P/O:11109", 200, "CBJODFDFDFD"));
-            WorkOrder.Add(new WorkOrderDetails(11109, "P/O:11109", 200, "CBJODFDFDFD"));
-            WorkOrder.Add(new WorkOrderDetails(11109, "P/O:11109", 200, "CBJODFDFDFD"));
-            WorkOrder.Add(new WorkOrderDetails(11109, "P/O:11109", 200, "CBJODFDFDFD"));
-            WorkOrder.Add(new WorkOrderDetails(11109, "P/O:11109", 200, "CBJODFDFDFD"));
-            WorkOrder.Add(new WorkOrderDetails(11109, "P/O:11109", 200, "CBJODFDFDFD"));
+            WorkOrder.Add(new WorkOrderDetails(11109,"P/O:11101",200,"CBJODFDFDFD"));
+            WorkOrder.Add(new WorkOrderDetails(11109, "P/O:11101", 200, "CBJODFDFDFD"));
+            WorkOrder.Add(new WorkOrderDetails(11109, "P/O:11102", 200, "CBJODFDFDFD"));
+            WorkOrder.Add(new WorkOrderDetails(11109, "P/O:11102", 200, "CBJODFDFDFD"));
+            WorkOrder.Add(new WorkOrderDetails(11109, "P/O:11103", 200, "CBJODFDFDFD"));
+            WorkOrder.Add(new WorkOrderDetails(11109, "P/O:11103", 200, "CBJODFDFDFD"));
+            WorkOrder.Add(new WorkOrderDetails(11109, "P/O:11103", 200, "CBJODFDFDFD"));
 
             return WorkOrder;
         }
