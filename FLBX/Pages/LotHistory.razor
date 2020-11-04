@@ -6,7 +6,7 @@
 @using Syncfusion.Blazor.Inputs
 @using Syncfusion.Blazor.Cards
 @using Syncfusion.Blazor.Layouts
-
+@using FLBX.Components
 
 @*TOP Menu  *@
 @*<h1 class="h3 mb-1 text-gray-800">Layout TEST</h1>
@@ -15,29 +15,28 @@
     <div class="col-lg-12 px-0">
         <div class="card shadow mb-2 border-bottom-primary">
             <a href="#collapseTopMenu" class="d-block card-header py-2" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseTopMenu">
-                <h6 class="m-0 font-weight-bold text-primary">조회조건</h6>
+                <h6 class="m-0 font-weight-bold text-primary">Lot조회조건</h6>
             </a>
             <div class="collapse show" id="collapseTopMenu" style="">
                 <div class="card-body pb-1">
                     <div class="row">
                         <div class="col-xl-3">
-                            <SfDateRangePicker Placeholder="생산시작일 From To"></SfDateRangePicker>
+                            <SfDateRangePicker Placeholder="생산시작일(기간)"></SfDateRangePicker>
                         </div>
                         <div class="col-xl-3">
-                            <SfTextBox Placeholder="이름:" FloatLabelType="@FloatLabelType.Never"></SfTextBox>
+                            <SfTextBox Placeholder="Lot Id검색:" FloatLabelType="@FloatLabelType.Never"></SfTextBox>
                         </div>
                         <div class="col-xl-3">
-                            <SfDropDownList TItem="string" TValue="string" PopupHeight="230px" Placeholder="제품">
+                            <SfDropDownList TItem="string" TValue="string" PopupHeight="230px" Placeholder="Work Order">
                             </SfDropDownList>
                         </div>
                         <div class="col-xl-3">
-                            <SfTextBox Placeholder="ProductOrder.." FloatLabelType="@FloatLabelType.Never"></SfTextBox>
+                            <SfTextBox Placeholder="Lot이름 검색.." FloatLabelType="@FloatLabelType.Never"></SfTextBox>
                         </div>
                     </div>
                     <div class="row d-flex justify-content-end">
                         <div class="p-2">
                             <SfButton IsPrimary="true">조회</SfButton>
-                            <SfButton CssClass="e-danger">Lot생성</SfButton>
                         </div>
                     </div>
                 </div>
@@ -53,51 +52,24 @@
         <div class="control_wrapper shadow mb-4">
             <SfSplitter CssClass="out-splitter py-3" Width="100%" SeparatorSize="2" Height="100%">
                 <SplitterPanes>
-                    <SplitterPane Size="30%" Min="60px" CssClass="px-3">
+                    <SplitterPane Size="40%" Min="60px" CssClass="px-3">
                         <ContentTemplate>
-                            <div class="font-weight-bold text-info mb-1"><i class="fas fa fa-bars pr-1"></i>WorkOrder</div>
-                            <SfGrid DataSource="@GridData">
+                            <div class="font-weight-bold text-info mb-1"><i class="fas fa fa-bars pr-1"></i>Lot group by workorder</div>
+                            <SfGrid DataSource="@GridData" AllowGrouping="true">
+                                <GridGroupSettings Columns="@GroupedColumns"></GridGroupSettings>
                                 <GridColumns>
                                     <GridColumn Field=@nameof(WorkOrderDetails.Id) IsPrimaryKey="true" HeaderText="WorkOrderId" Width="100"></GridColumn>
-                                    <GridColumn Field=@nameof(WorkOrderDetails.WorkOrder) HeaderText="Name" TextAlign="TextAlign.Right" Width="50"></GridColumn>
+                                    <GridColumn Field=@nameof(WorkOrderDetails.WorkOrder) HeaderText="WorkOrder" TextAlign="TextAlign.Right" Width="50"></GridColumn>
                                     <GridColumn Field=@nameof(WorkOrderDetails.Qty) HeaderText="수량" Width="50"></GridColumn>
                                     <GridColumn Field=@nameof(WorkOrderDetails.Pruduct) HeaderText="Product" Width="80"></GridColumn>
                                 </GridColumns>
                             </SfGrid>
                         </ContentTemplate>
                     </SplitterPane>
-                    <SplitterPane Size="20%" Min="20%" Max="20%" CssClass="px-3">
+                   
+                    <SplitterPane Size="60%" Min="60px" CssClass="px-3">
                         <ContentTemplate>
-                            <div class="font-weight-bold text-info mb-1"><i class="fas fa fa-bars pr-1"></i>Create Lot</div>
-                            <div class="p-2">
-                                <SfTextBox Placeholder="WorkOrder" FloatLabelType="@FloatLabelType.Never"></SfTextBox>
-                            </div>
-                            <div class="p-2">
-                                <SfTextBox Placeholder="잔여Qty" FloatLabelType="@FloatLabelType.Never" Readonly="true"></SfTextBox>
-                            </div>
-                            <div class="p-2">
-                                <SfNumericTextBox Format="(Lot개수) ###" TValue="double?" Value=10></SfNumericTextBox>
-                            </div>
-                            <div class="p-2">
-                                <SfNumericTextBox Format="(Lot별Qty) ###" TValue="double?" Value=10></SfNumericTextBox>
-                            </div>
-                            <div class="p-2">
-                                <SfTextBox Placeholder="Prefix Keyword:" FloatLabelType="@FloatLabelType.Never"></SfTextBox>
-                            </div>
-                            <div class="p-2">
-                                <SfTextBox Placeholder="Remark:" FloatLabelType="@FloatLabelType.Never"></SfTextBox>
-                            </div>
-                            <div class="p-2">
-                                <SfTextBox Placeholder="Discription:" FloatLabelType="@FloatLabelType.Never"></SfTextBox>
-                            </div>
-                            <div class="p-2">
-                                <SfButton IsPrimary="true">Lot임시 생성</SfButton>
-                            </div>
-                        </ContentTemplate>
-                    </SplitterPane>
-                    <SplitterPane Size="50%" Min="60px" CssClass="px-3">
-                        <ContentTemplate>
-                            <div class="font-weight-bold text-info mb-1"><i class="fas fa fa-bars pr-1"></i>Lot</div>
+                            <div class="font-weight-bold text-info mb-1"><i class="fas fa fa-bars pr-1"></i>Lot history</div>
                             <SfGrid DataSource="@GridDataLot">
                                 <GridColumns>
                                     <GridColumn Field=@nameof(Lot.Id) IsPrimaryKey="true" HeaderText="LotId" Width="50"></GridColumn>
@@ -124,7 +96,7 @@
 
     public List<WorkOrderDetails> GridData { get; set; }
     public List<Lot> GridDataLot { get; set; }
-
+    public string[] GroupedColumns = new string[] { "WorkOrder" };
     protected override void OnInitialized()
     {
         GridData = WorkOrderDetails.GetAllRecords();
