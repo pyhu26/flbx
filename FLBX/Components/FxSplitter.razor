@@ -1,0 +1,50 @@
+﻿@implements Microsoft.AspNetCore.Components.IComponent
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Calendars
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Cards
+@using Syncfusion.Blazor.Layouts
+@using System.Reflection;
+@using FLBX.Pages
+
+@inject FxUtil fxUtil
+
+<SfSplitter CssClass="@cssClass" Width="@width" Height="@height" SeparatorSize="2">
+   <SplitterPanes>
+    @if (this.splitters != null)
+    {
+            foreach (var pane in this.splitters)
+            {   
+                <SplitterPane Size="@pane.size" Min="@pane.min" CssClass="@pane.cssClass">
+                    <div class="font-weight-bold text-info mb-1"><i class="fas fa fa-bars pr-1"></i> @pane.title </div>
+                    @pane.contentTemplate
+                </SplitterPane>
+            }
+    }
+    else
+    {   
+        <SplitterPane Size="100%" Min="100%" CssClass="px-3">
+            <div> Loading...</div>
+        </SplitterPane>
+    }
+    </SplitterPanes>   
+</SfSplitter>
+
+@code {
+
+    [Parameter]
+    public string cssClass { get; set; }
+    [Parameter]
+    public string width { get; set; }
+    [Parameter]
+    public string height { get; set; }
+    [Parameter]
+    public List<Splitter> splitters { get; set; }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+    }
+}
