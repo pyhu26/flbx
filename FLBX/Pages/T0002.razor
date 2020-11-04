@@ -1,0 +1,99 @@
+﻿@page "/T0002";
+
+@implements Microsoft.AspNetCore.Components.IComponent
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Calendars
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Cards
+@using Syncfusion.Blazor.Layouts
+
+@inject FxUtil fxUtil
+@*TOP Menu  *@
+@*<h1 class="h3 mb-1 text-gray-800">Layout TEST</h1>
+    <p class="mb-4">Home > TEST > TEST > Layout TEST</p>*@
+<div class="row">
+    <div class="col-lg-12 px-0">
+        <div class="card shadow mb-2 border-bottom-primary">
+            <a href="#collapseTopMenu" class="d-block card-header py-2" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseTopMenu">
+                <h6 class="m-0 font-weight-bold text-primary">조회조건</h6>
+            </a>
+            <div class="collapse show" id="collapseTopMenu" style="">
+                <div class="card-body pb-1">
+                    <div class="row">
+                        <div class="col-xl-3">
+                            <SfDateRangePicker Placeholder="생산시작일 From To"></SfDateRangePicker>
+                        </div>
+                        <div class="col-xl-3">
+                            <SfTextBox Placeholder="이름:" FloatLabelType="@FloatLabelType.Never"></SfTextBox>
+                        </div>
+                        <div class="col-xl-3">
+                            <SfDropDownList TItem="string" TValue="string" PopupHeight="230px" Placeholder="제품">
+                            </SfDropDownList>
+                        </div>
+                        <div class="col-xl-3">
+                            <SfTextBox Placeholder="ProductOrder.." FloatLabelType="@FloatLabelType.Never"></SfTextBox>
+                        </div>
+                    </div>
+                    <div class="row d-flex justify-content-end">
+                        <div class="p-2">
+                            <SfButton IsPrimary="true">조회</SfButton>
+                            <SfButton CssClass="e-danger">Lot생성</SfButton>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*TOP Menu -End- *@
+
+@*Main  Content *@
+<div class="row">
+    <div class="col-lg-12 px-0">
+        <div class="control_wrapper shadow mb-4" style="height: 615px;">
+            <FLBX.Components.FxSplitter cssClass="out-splitter py-3" width="100%" height="100%" splitters="@splitters"/>
+        </div>
+    </div>
+</div>
+
+@*Main  Content End *@
+
+@code {
+    public List<Splitter> splitters = new List<Splitter>();
+
+    protected override void OnInitialized()
+    {
+        Splitter splitterModel = new Splitter()
+        {
+            size = "30%",
+            cssClass = "px-3",
+            min = "10%",
+            title = "테스트타이틀",
+            contentTemplate = fxUtil.CreateComponent("M0001")
+        };
+        splitters.Add(splitterModel);
+
+        splitterModel = new Splitter()
+        {
+            size = "50%",
+            cssClass = "px-3",
+            min = "10%",
+            title = "테스트타이틀2",
+            contentTemplate = fxUtil.CreateComponent("M0002")
+        };
+        splitters.Add(splitterModel);
+
+        splitterModel = new Splitter()
+        {
+            size = "20%",
+            cssClass = "px-3",
+            min = "10%",
+            title = "테스트타이틀3",
+            contentTemplate = fxUtil.CreateComponent("M0003")
+        };
+        splitters.Add(splitterModel);
+
+    }
+}
