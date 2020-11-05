@@ -57,7 +57,6 @@ namespace FLBX.Components
         }
 
         public string AuthorityLevel { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public ColSpan ColSpanValue { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public void GetValue()
         {

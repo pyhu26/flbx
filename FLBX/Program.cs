@@ -30,6 +30,7 @@ namespace FLBX
             #region Custom Service 등록
             builder.Services.AddSingleton<FxUtil>(); //공용 함수
             builder.Services.AddSingleton<MenuService>(); //메뉴 관리
+            builder.Services.AddTransient<MessageService>(); //메시지 서비스
             #endregion
 
             await builder.Build().RunAsync();

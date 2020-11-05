@@ -29,7 +29,7 @@ namespace FLBX
                 throw new NotImplementConfigureException("Can not find. product service url. please configure hosts.json");
             }
 
-            this.Menus = await this.ClientFactory.CreateClient().GetFromJsonAsync<List<Menu>>(productUrl + ":9021/api/Menus");
+            this.Menus = await this.ClientFactory.CreateClient().GetFromJsonAsync<List<Menu>>(productUrl + "/api/Menus");
         }
     }
 }
