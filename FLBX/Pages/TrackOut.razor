@@ -19,23 +19,23 @@
                 <div class="card-body pb-1">
                     <div class="row">
                         @*<div class="col-xl-2">
-            <SfDateRangePicker Placeholder="생산시작일(기간)"></SfDateRangePicker>
-        </div>
+                                <SfDateRangePicker Placeholder="생산시작일(기간)"></SfDateRangePicker>
+                            </div>
 
-        <div class="col-xl-2">
-            <SfDropDownList TItem="string" TValue="string" PopupHeight="230px" Placeholder="WorkOrder">
-            </SfDropDownList>
-        </div>
-        <div class="col-xl-2">
-            <SfDropDownList TItem="string" TValue="string" PopupHeight="230px" Placeholder="공정">
-            </SfDropDownList>
-        </div>
-        <div class="col-xl-2">
-            <SfTextBox Placeholder="Lot Id검색.." FloatLabelType="@FloatLabelType.Never"></SfTextBox>
-        </div>
-        <div class="col-xl-2">
-            <SfTextBox Placeholder="Lot이름검색:" FloatLabelType="@FloatLabelType.Never"></SfTextBox>
-        </div>*@
+                            <div class="col-xl-2">
+                                <SfDropDownList TItem="string" TValue="string" PopupHeight="230px" Placeholder="WorkOrder">
+                                </SfDropDownList>
+                            </div>
+                            <div class="col-xl-2">
+                                <SfDropDownList TItem="string" TValue="string" PopupHeight="230px" Placeholder="공정">
+                                </SfDropDownList>
+                            </div>
+                            <div class="col-xl-2">
+                                <SfTextBox Placeholder="Lot Id검색.." FloatLabelType="@FloatLabelType.Never"></SfTextBox>
+                            </div>
+                            <div class="col-xl-2">
+                                <SfTextBox Placeholder="Lot이름검색:" FloatLabelType="@FloatLabelType.Never"></SfTextBox>
+                            </div>*@
                         <FxDateRangePicker MediumColSpanValue="2" Placeholder="생산시작일(기간)"></FxDateRangePicker>
                         <FxDropDown MediumColSpanValue="2" Placeholder="Work Order" PopupHeight="230px"></FxDropDown>
                         <FxDropDown MediumColSpanValue="2" Placeholder="공정" PopupHeight="230px"></FxDropDown>
@@ -44,7 +44,7 @@
                     </div>
                     <div class="row d-flex justify-content-end">
                         <div class="p-2">
-                            <SfButton IsPrimary="true">조회</SfButton>
+                            <SfButton IsPrimary="true" @onclick="@SearchWorkOrder">조회</SfButton>
                             <SfButton CssClass="e-danger">작업종료</SfButton>
                         </div>
                     </div>
@@ -84,12 +84,19 @@
 
     async Task SetParametersAsync(ParameterView parameters) { }
 
-    public List<WorkOrderDetails> GridData { get; set; }
-    public List<Lot> GridDataLot { get; set; }
+    public List<WorkOrderDetails> GridData { get; set; } = new List<WorkOrderDetails>();
+
     private bool isChecked = true;
     protected override void OnInitialized()
     {
-        GridData = WorkOrderDetails.GetAllRecords();
-        GridDataLot = Lot.GetAllRecords();
+        // GridData = WorkOrderDetails.GetAllRecords();
+
     }
+    private async Task SearchWorkOrder()
+    {
+        GridData = WorkOrderDetails.GetAllRecords();
+        await base.OnInitializedAsync();
+
+    }
+}
 }
