@@ -6,7 +6,7 @@
 @using Syncfusion.Blazor.Inputs
 @using Syncfusion.Blazor.Cards
 @using Syncfusion.Blazor.Layouts
-
+@using FLBX.Components
 
 
 <div class="row">
@@ -18,24 +18,29 @@
             <div class="collapse show" id="collapseTopMenu" style="">
                 <div class="card-body pb-1">
                     <div class="row">
-                        <div class="col-xl-2">
-                            <SfDateRangePicker Placeholder="생산시작일(기간)"></SfDateRangePicker>
-                        </div>
+                        @*<div class="col-xl-2">
+            <SfDateRangePicker Placeholder="생산시작일(기간)"></SfDateRangePicker>
+        </div>
 
-                        <div class="col-xl-2">
-                            <SfDropDownList TItem="string" TValue="string" PopupHeight="230px" Placeholder="WorkOrder">
-                            </SfDropDownList>
-                        </div>
-                        <div class="col-xl-2">
-                            <SfDropDownList TItem="string" TValue="string" PopupHeight="230px" Placeholder="공정">
-                            </SfDropDownList>
-                        </div>
-                        <div class="col-xl-2">
-                            <SfTextBox Placeholder="Lot Id검색.." FloatLabelType="@FloatLabelType.Never"></SfTextBox>
-                        </div>
-                        <div class="col-xl-2">
-                            <SfTextBox Placeholder="Lot이름검색:" FloatLabelType="@FloatLabelType.Never"></SfTextBox>
-                        </div>
+        <div class="col-xl-2">
+            <SfDropDownList TItem="string" TValue="string" PopupHeight="230px" Placeholder="WorkOrder">
+            </SfDropDownList>
+        </div>
+        <div class="col-xl-2">
+            <SfDropDownList TItem="string" TValue="string" PopupHeight="230px" Placeholder="공정">
+            </SfDropDownList>
+        </div>
+        <div class="col-xl-2">
+            <SfTextBox Placeholder="Lot Id검색.." FloatLabelType="@FloatLabelType.Never"></SfTextBox>
+        </div>
+        <div class="col-xl-2">
+            <SfTextBox Placeholder="Lot이름검색:" FloatLabelType="@FloatLabelType.Never"></SfTextBox>
+        </div>*@
+                        <FxDateRangePicker MediumColSpanValue="2" Placeholder="생산시작일(기간)"></FxDateRangePicker>
+                        <FxDropDown MediumColSpanValue="2" Placeholder="Work Order" PopupHeight="230px"></FxDropDown>
+                        <FxDropDown MediumColSpanValue="2" Placeholder="공정" PopupHeight="230px"></FxDropDown>
+                        <FxTextBox MediumColSpanValue="2" Placeholder="Lot Id검색:"></FxTextBox>
+                        <FxTextBox MediumColSpanValue="2" Placeholder="Lot이름검색:"></FxTextBox>
                     </div>
                     <div class="row d-flex justify-content-end">
                         <div class="p-2">

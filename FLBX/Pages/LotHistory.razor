@@ -20,19 +20,23 @@
             <div class="collapse show" id="collapseTopMenu" style="">
                 <div class="card-body pb-1">
                     <div class="row">
-                        <div class="col-xl-3">
-                            <SfDateRangePicker Placeholder="생산시작일(기간)"></SfDateRangePicker>
-                        </div>
-                        <div class="col-xl-3">
-                            <SfTextBox Placeholder="Lot Id검색:" FloatLabelType="@FloatLabelType.Never"></SfTextBox>
-                        </div>
-                        <div class="col-xl-3">
-                            <SfDropDownList TItem="string" TValue="string" PopupHeight="230px" Placeholder="Work Order">
-                            </SfDropDownList>
-                        </div>
-                        <div class="col-xl-3">
-                            <SfTextBox Placeholder="Lot이름 검색.." FloatLabelType="@FloatLabelType.Never"></SfTextBox>
-                        </div>
+                        @*<div class="col-xl-3">
+            <SfDateRangePicker Placeholder="생산시작일(기간)"></SfDateRangePicker>
+        </div>
+        <div class="col-xl-3">
+            <SfTextBox Placeholder="Lot Id검색:" FloatLabelType="@FloatLabelType.Never"></SfTextBox>
+        </div>
+        <div class="col-xl-3">
+            <SfDropDownList TItem="string" TValue="string" PopupHeight="230px" Placeholder="Work Order">
+            </SfDropDownList>
+        </div>
+        <div class="col-xl-3">
+            <SfTextBox Placeholder="Lot이름 검색.." FloatLabelType="@FloatLabelType.Never"></SfTextBox>
+        </div>*@
+                        <FxDateRangePicker MediumColSpanValue="3" Placeholder="생산시작일(기간)"></FxDateRangePicker>
+                        <FxTextBox MediumColSpanValue="3" Placeholder="Lot Id검색:"></FxTextBox>
+                        <FxDropDown MediumColSpanValue="3" Placeholder="Work Order" PopupHeight="230px"></FxDropDown>
+                        <FxTextBox MediumColSpanValue="3" Placeholder="Lot이름검색:"></FxTextBox>
                     </div>
                     <div class="row d-flex justify-content-end">
                         <div class="p-2">
