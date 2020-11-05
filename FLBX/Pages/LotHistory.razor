@@ -7,7 +7,7 @@
 @using Syncfusion.Blazor.Cards
 @using Syncfusion.Blazor.Layouts
 @using FLBX.Components
-
+@inject FxUtil fxUtil
 @*TOP Menu  *@
 @*<h1 class="h3 mb-1 text-gray-800">Layout TEST</h1>
     <p class="mb-4">Home > TEST > TEST > Layout TEST</p>*@
@@ -21,18 +21,18 @@
                 <div class="card-body pb-1">
                     <div class="row">
                         @*<div class="col-xl-3">
-            <SfDateRangePicker Placeholder="생산시작일(기간)"></SfDateRangePicker>
-        </div>
-        <div class="col-xl-3">
-            <SfTextBox Placeholder="Lot Id검색:" FloatLabelType="@FloatLabelType.Never"></SfTextBox>
-        </div>
-        <div class="col-xl-3">
-            <SfDropDownList TItem="string" TValue="string" PopupHeight="230px" Placeholder="Work Order">
-            </SfDropDownList>
-        </div>
-        <div class="col-xl-3">
-            <SfTextBox Placeholder="Lot이름 검색.." FloatLabelType="@FloatLabelType.Never"></SfTextBox>
-        </div>*@
+                                <SfDateRangePicker Placeholder="생산시작일(기간)"></SfDateRangePicker>
+                            </div>
+                            <div class="col-xl-3">
+                                <SfTextBox Placeholder="Lot Id검색:" FloatLabelType="@FloatLabelType.Never"></SfTextBox>
+                            </div>
+                            <div class="col-xl-3">
+                                <SfDropDownList TItem="string" TValue="string" PopupHeight="230px" Placeholder="Work Order">
+                                </SfDropDownList>
+                            </div>
+                            <div class="col-xl-3">
+                                <SfTextBox Placeholder="Lot이름 검색.." FloatLabelType="@FloatLabelType.Never"></SfTextBox>
+                            </div>*@
                         <FxDateRangePicker MediumColSpanValue="3" Placeholder="생산시작일(기간)"></FxDateRangePicker>
                         <FxTextBox MediumColSpanValue="3" Placeholder="Lot Id검색:"></FxTextBox>
                         <FxDropDown MediumColSpanValue="3" Placeholder="Work Order" PopupHeight="230px"></FxDropDown>
@@ -54,39 +54,41 @@
 <div class="row">
     <div class="col-lg-12 px-0">
         <div class="control_wrapper shadow mb-4">
-            <SfSplitter CssClass="out-splitter py-3" Width="100%" SeparatorSize="2" Height="100%">
-                <SplitterPanes>
-                    <SplitterPane Size="40%" Min="60px" CssClass="px-3">
-                        <ContentTemplate>
-                            <div class="font-weight-bold text-info mb-1"><i class="fas fa fa-bars pr-1"></i>Lot group by workorder</div>
-                            <SfGrid DataSource="@GridData" AllowGrouping="true">
-                                <GridGroupSettings Columns="@GroupedColumns"></GridGroupSettings>
-                                <GridColumns>
-                                    <GridColumn Field=@nameof(WorkOrderDetails.Id) IsPrimaryKey="true" HeaderText="WorkOrderId" Width="100"></GridColumn>
-                                    <GridColumn Field=@nameof(WorkOrderDetails.WorkOrder) HeaderText="WorkOrder" TextAlign="TextAlign.Right" Width="50"></GridColumn>
-                                    <GridColumn Field=@nameof(WorkOrderDetails.Qty) HeaderText="수량" Width="50"></GridColumn>
-                                    <GridColumn Field=@nameof(WorkOrderDetails.Pruduct) HeaderText="Product" Width="80"></GridColumn>
-                                </GridColumns>
-                            </SfGrid>
-                        </ContentTemplate>
-                    </SplitterPane>
-                   
-                    <SplitterPane Size="60%" Min="60px" CssClass="px-3">
-                        <ContentTemplate>
-                            <div class="font-weight-bold text-info mb-1"><i class="fas fa fa-bars pr-1"></i>Lot history</div>
-                            <SfGrid DataSource="@GridDataLot">
-                                <GridColumns>
-                                    <GridColumn Field=@nameof(Lot.Id) IsPrimaryKey="true" HeaderText="LotId" Width="50"></GridColumn>
-                                    <GridColumn Field=@nameof(Lot.Name) HeaderText="이름" TextAlign="TextAlign.Right" Width="50"></GridColumn>
-                                    <GridColumn Field=@nameof(Lot.Qty) HeaderText="수량" Width="50"></GridColumn>
-                                    <GridColumn Field=@nameof(Lot.Segment) HeaderText="공정" Width="80"></GridColumn>
-                                    <GridColumn Field=@nameof(Lot.Equitment) HeaderText="설비" Width="80"></GridColumn>
-                                </GridColumns>
-                            </SfGrid>
-                        </ContentTemplate>
-                    </SplitterPane>
-                </SplitterPanes>
-            </SfSplitter>
+            @*<SfSplitter CssClass="out-splitter py-3" Width="100%" SeparatorSize="2" Height="100%">
+                    <SplitterPanes>
+                        <SplitterPane Size="40%" Min="60px" CssClass="px-3">
+                            <ContentTemplate>
+                                <div class="font-weight-bold text-info mb-1"><i class="fas fa fa-bars pr-1"></i>Lot group by workorder</div>
+                                <SfGrid DataSource="@GridData" AllowGrouping="true">
+                                    <GridGroupSettings Columns="@GroupedColumns"></GridGroupSettings>
+                                    <GridColumns>
+                                        <GridColumn Field=@nameof(WorkOrderDetails.Id) IsPrimaryKey="true" HeaderText="WorkOrderId" Width="100"></GridColumn>
+                                        <GridColumn Field=@nameof(WorkOrderDetails.WorkOrder) HeaderText="WorkOrder" TextAlign="TextAlign.Right" Width="50"></GridColumn>
+                                        <GridColumn Field=@nameof(WorkOrderDetails.Qty) HeaderText="수량" Width="50"></GridColumn>
+                                        <GridColumn Field=@nameof(WorkOrderDetails.Pruduct) HeaderText="Product" Width="80"></GridColumn>
+                                    </GridColumns>
+                                </SfGrid>
+                            </ContentTemplate>
+                        </SplitterPane>
+
+                        <SplitterPane Size="60%" Min="60px" CssClass="px-3">
+                            <ContentTemplate>
+                                <div class="font-weight-bold text-info mb-1"><i class="fas fa fa-bars pr-1"></i>Lot history</div>
+                                <SfGrid DataSource="@GridDataLot">
+                                    <GridColumns>
+                                        <GridColumn Field=@nameof(Lot.Id) IsPrimaryKey="true" HeaderText="LotId" Width="50"></GridColumn>
+                                        <GridColumn Field=@nameof(Lot.Name) HeaderText="이름" TextAlign="TextAlign.Right" Width="50"></GridColumn>
+                                        <GridColumn Field=@nameof(Lot.Qty) HeaderText="수량" Width="50"></GridColumn>
+                                        <GridColumn Field=@nameof(Lot.Segment) HeaderText="공정" Width="80"></GridColumn>
+                                        <GridColumn Field=@nameof(Lot.Equitment) HeaderText="설비" Width="80"></GridColumn>
+                                    </GridColumns>
+                                </SfGrid>
+                            </ContentTemplate>
+                        </SplitterPane>
+                    </SplitterPanes>
+                </SfSplitter>*@
+            <FLBX.Components.FxSplitter cssClass="out-splitter py-3" width="100%" height="100%" splitters="@splitters" />
+
         </div>
     </div>
 </div>
@@ -94,16 +96,33 @@
 @*Main  Content End *@
 
 @code {
-    void Attach(RenderHandle renderHandle) { }
+    
 
-    async Task SetParametersAsync(ParameterView parameters) { }
+    public List<Splitter> splitters = new List<Splitter>();
 
-    public List<WorkOrderDetails> GridData { get; set; }
-    public List<Lot> GridDataLot { get; set; }
-    public string[] GroupedColumns = new string[] { "WorkOrder" };
     protected override void OnInitialized()
-    {
-        GridData = WorkOrderDetails.GetAllRecords();
-        GridDataLot = Lot.GetAllRecords();
+    {    
+        Splitter splitterModel = new Splitter()
+        {
+            size = "40%",
+            cssClass = "px-3",
+            min = "10%",
+            title = "Lot group by workorder",
+            contentTemplate = fxUtil.CreateComponent("M0001")
+        };
+        splitters.Add(splitterModel);
+
+        splitterModel = new Splitter()
+        {
+            size = "60%",
+            cssClass = "px-3",
+            min = "10%",
+            title = "Lot history",
+            contentTemplate = fxUtil.CreateComponent("M0002")
+        };
+        splitters.Add(splitterModel);
+
+     
+
     }
 }

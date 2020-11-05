@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FLBX.Pages
+namespace FLBX.Models
 {
     public class Lot
     {
@@ -11,7 +11,7 @@ namespace FLBX.Pages
         {
 
         }
-        public Lot(string id, string name, int qty, string segment,string equitment)
+        public Lot(string id, string name, int qty, string segment, string equitment)
         {
             this.Id = id;
             this.Name = name;
@@ -22,7 +22,7 @@ namespace FLBX.Pages
         public static List<Lot> GetAllRecords()
         {
             List<Lot> LotDetail = new List<Lot>();
-            LotDetail.Add(new Lot("L03", "Assy-1-L03", 20, "TrankIn","Aging"));
+            LotDetail.Add(new Lot("L03", "Assy-1-L03", 20, "TrankIn", "Aging"));
             LotDetail.Add(new Lot("L03", "Assy-1-L03", 20, "TrankIn", "Aging"));
             LotDetail.Add(new Lot("L03", "Assy-1-L03", 20, "TrankIn", "Aging"));
             LotDetail.Add(new Lot("L03", "Assy-1-L03", 20, "TrankIn", "Aging"));
