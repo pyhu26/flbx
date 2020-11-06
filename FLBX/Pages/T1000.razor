@@ -7,12 +7,13 @@
 @using Syncfusion.Blazor.Cards
 @using Syncfusion.Blazor.Layouts
 
-@inject MessageService messageService
+@using System.Text.Json
 
+@inject MessageService messageService
 
 @*TOP Menu  *@
 
-<SfButton @ref="btnQuery" OnClick= "@btnQuery_OnClickAsync"> Query Test</SfButton>
+<SfButton @ref="btnQuery" OnClick="@btnQuery_OnClickAsync"> Query Test</SfButton>
 
 <div class="row">
     <div class="col-lg-12 px-0">
@@ -24,21 +25,21 @@
                 <div class="card-body pb-1">
                     <div class="row">
                         @*<div class="col-xl-3">
-            <SfDateRangePicker Placeholder="생산시작일 From To"></SfDateRangePicker>
-        </div>
-        <div class="col-xl-3">
-            <SfTextBox Placeholder="이름:" FloatLabelType="@FloatLabelType.Never"></SfTextBox>
-        </div>*@
-                        <FLBX.Components.FxDropDown MediumColSpanValue="6" Placeholder="제품1" PopupHeight="230px"/>
-                        <FLBX.Components.FxDropDown MediumColSpanValue="3" Placeholder="제품2" PopupHeight="430px"/>
-                        <FLBX.Components.FxDropDown MediumColSpanValue="3" Placeholder="제품3" PopupHeight="630px"/>
+                                <SfDateRangePicker Placeholder="생산시작일 From To"></SfDateRangePicker>
+                            </div>
+                            <div class="col-xl-3">
+                                <SfTextBox Placeholder="이름:" FloatLabelType="@FloatLabelType.Never"></SfTextBox>
+                            </div>*@
+                        <FLBX.Components.FxDropDown MediumColSpanValue="6" Placeholder="제품1" PopupHeight="230px" />
+                        <FLBX.Components.FxDropDown MediumColSpanValue="3" Placeholder="제품2" PopupHeight="430px" />
+                        <FLBX.Components.FxDropDown MediumColSpanValue="3" Placeholder="제품3" PopupHeight="630px" />
                         @*<div class="col-xl-3">
-            <SfDropDownList TItem="string" TValue="string" PopupHeight="230px" Placeholder="제품">
-            </SfDropDownList>
-        </div>*@
+                                <SfDropDownList TItem="string" TValue="string" PopupHeight="230px" Placeholder="제품">
+                                </SfDropDownList>
+                            </div>*@
                         @*<div class="col-xl-3">
-            <SfTextBox Placeholder="ProductOrder.." FloatLabelType="@FloatLabelType.Never"></SfTextBox>
-        </div>*@
+                                <SfTextBox Placeholder="ProductOrder.." FloatLabelType="@FloatLabelType.Never"></SfTextBox>
+                            </div>*@
                     </div>
                     <div class="row d-flex justify-content-end">
                         <div class="p-2">
@@ -62,12 +63,13 @@
                     <SplitterPane Size="30%" Min="60px" CssClass="px-3">
                         <ContentTemplate>
                             <div class="font-weight-bold text-info mb-1"><i class="fas fa fa-bars pr-1"></i>WorkOrder</div>
-                            <SfGrid DataSource="@GridData">
+                            <SfGrid DataSource="@Workorders" AllowExcelExport="true" AllowPaging="true" AllowTextWrap="true" AllowRowDragAndDrop="true" AllowResizing="true" AllowReordering="true" AllowFiltering="true">
                                 <GridColumns>
-                                    <GridColumn Field=@nameof(WorkOrderDetails.Id) IsPrimaryKey="true" HeaderText="WorkOrderId" Width="100"></GridColumn>
-                                    <GridColumn Field=@nameof(WorkOrderDetails.WorkOrder) HeaderText="Name" TextAlign="TextAlign.Right" Width="50"></GridColumn>
-                                    <GridColumn Field=@nameof(WorkOrderDetails.Qty) HeaderText="수량" Width="50"></GridColumn>
-                                    <GridColumn Field=@nameof(WorkOrderDetails.Pruduct) HeaderText="Product" Width="80"></GridColumn>
+                                    <GridColumn Field="WORKORDERID" IsPrimaryKey="true" HeaderText="ID" Width="100"></GridColumn>
+                                    <GridColumn Field="WORKORDERNAME" HeaderText="NAME" TextAlign="TextAlign.Right" Width="50"></GridColumn>
+                                    <GridColumn Field="QTY" HeaderText="QTY" Width="50"></GridColumn>
+                                    <GridColumn Field="PRODUCTDEFINITIONID" HeaderText="PRODUCT" Width="80"></GridColumn>
+                                    <GridColumn Field="PRODUCTORDERID" HeaderText="PO" Width="80"></GridColumn>
                                 </GridColumns>
                             </SfGrid>
                         </ContentTemplate>
@@ -123,7 +125,25 @@
 
 @*Main  Content End *@
 
+@if (this.Workorders != null && this.Workorders.Count > 0)
+{
+    foreach (var item in Workorders)
+    {
+        <div>@item.PRODUCTORDERID </div>
+    }
+}
+else
+{
+    <div> not find workorders </div>
+}
+
+
+
+
 @code {
+
+
+    List<TempModel> Workorders { get; set; }
 
     public SfButton btnQuery;
 
@@ -144,12 +164,13 @@
     private async Task btnQuery_OnClickAsync(MouseEventArgs arg)
     {
         //Query Message 생성
-        QueryMessage queryMeasage = new QueryMessage() {
+        QueryMessage queryMeasage = new QueryMessage()
+        {
             QueryId = "GetWorkorder",
             QueryType = "Inquiry",
             QueryVersion = "001",
             SiteId = "A_10",
-            ParameterKeyValue = new Dictionary<string, object>() { { "from" , "2020-11-01 06:00:00"}, { "to", "2020-11-02 06:00:00" } }
+            ParameterKeyValue = new Dictionary<string, object>() { { "from", "2020-11-01 06:00:00" }, { "to", "2020-11-02 06:00:00" } }
         };
 
         FLMessageSet messageSet = messageService.CreateMessageSet(MeesageType.Query, queryMeasage, null, null);
@@ -159,8 +180,17 @@
         await Task.WhenAll(task);
         ReplyMessage reply = task.Result;
 
-        string replyMessage = System.Text.Json.JsonSerializer.Serialize<ReplyMessage>(reply);
+        //Reply Message Binding
+        this.Workorders = JsonSerializer.Deserialize<List<TempModel>>(Convert.ToString(reply.ResultKeyValues["reply"]));
+    }
 
-        System.Diagnostics.Debug.WriteLine($"reply:{replyMessage}") ;
+    class TempModel
+    {
+        public string WORKORDERID { get; set; }
+        public string WORKORDERNAME { get; set; }
+        public float QTY { get; set; }
+        public string PRODUCTDEFINITIONID { get; set; }
+        public string PRODUCTORDERID { get; set; }
+
     }
 }
