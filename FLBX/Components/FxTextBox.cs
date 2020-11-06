@@ -29,7 +29,7 @@ namespace FLBX.Components
         public string Placeholder { get; set; }
 
         public string AuthorityLevel { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public ColSpan ColSpanValue { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        
         protected override void OnParametersSet()
         {
             base.OnParametersSet();

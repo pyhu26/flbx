@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Abstracts\FxComponent.cs" />
     <Content Include="Interfaces\IFxComponent.cs" />
   </ItemGroup>
 
@@ -22,6 +21,11 @@
 
   <ItemGroup>
     <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Abstracts\" />
+    <Folder Include="Constants\" />
   </ItemGroup>
 
 </Project>

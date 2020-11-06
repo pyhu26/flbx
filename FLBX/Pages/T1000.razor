@@ -6,11 +6,15 @@
 @using Syncfusion.Blazor.Inputs
 @using Syncfusion.Blazor.Cards
 @using Syncfusion.Blazor.Layouts
+
+@inject MessageService messageService
 @using FLBX.Models
 
+
 @*TOP Menu  *@
-@*<h1 class="h3 mb-1 text-gray-800">Layout TEST</h1>
-    <p class="mb-4">Home > TEST > TEST > Layout TEST</p>*@
+
+<SfButton @ref="btnQuery" OnClick= "@btnQuery_OnClickAsync"> Query Test</SfButton>
+
 <div class="row">
     <div class="col-lg-12 px-0">
         <div class="card shadow mb-2 border-bottom-primary">
@@ -26,9 +30,9 @@
         <div class="col-xl-3">
             <SfTextBox Placeholder="이름:" FloatLabelType="@FloatLabelType.Never"></SfTextBox>
         </div>*@
-                        <FLBX.Components.FxDropDown MediumColSpanValue="6" Placeholder="제품1" PopupHeight="230px"></FLBX.Components.FxDropDown>
-                        <FLBX.Components.FxDropDown MediumColSpanValue="3" Placeholder="제품2" PopupHeight="430px"></FLBX.Components.FxDropDown>
-                        <FLBX.Components.FxDropDown MediumColSpanValue="3" Placeholder="제품3" PopupHeight="630px"></FLBX.Components.FxDropDown>
+                        <FLBX.Components.FxDropDown MediumColSpanValue="6" Placeholder="제품1" PopupHeight="230px"/>
+                        <FLBX.Components.FxDropDown MediumColSpanValue="3" Placeholder="제품2" PopupHeight="430px"/>
+                        <FLBX.Components.FxDropDown MediumColSpanValue="3" Placeholder="제품3" PopupHeight="630px"/>
                         @*<div class="col-xl-3">
             <SfDropDownList TItem="string" TValue="string" PopupHeight="230px" Placeholder="제품">
             </SfDropDownList>
@@ -121,6 +125,9 @@
 @*Main  Content End *@
 
 @code {
+
+    public SfButton btnQuery;
+
     void Attach(RenderHandle renderHandle) { }
 
     async Task SetParametersAsync(ParameterView parameters) { }
@@ -132,5 +139,29 @@
     {
         GridData = WorkOrderDetails.GetAllRecords();
         GridDataLot = Lot.GetAllRecords();
+
+    }
+
+    private async Task btnQuery_OnClickAsync(MouseEventArgs arg)
+    {
+        //Query Message 생성
+        QueryMessage queryMeasage = new QueryMessage() {
+            QueryId = "GetWorkorder",
+            QueryType = "Inquiry",
+            QueryVersion = "001",
+            SiteId = "A_10",
+            ParameterKeyValue = new Dictionary<string, object>() { { "from" , "2020-11-01 06:00:00"}, { "to", "2020-11-02 06:00:00" } }
+        };
+
+        FLMessageSet messageSet = messageService.CreateMessageSet(MeesageType.Query, queryMeasage, null, null);
+
+        //Message Send
+        var task = messageService.SendMessageAsync("Product", "/query/executequery", messageSet);
+        await Task.WhenAll(task);
+        ReplyMessage reply = task.Result;
+
+        string replyMessage = System.Text.Json.JsonSerializer.Serialize<ReplyMessage>(reply);
+
+        System.Diagnostics.Debug.WriteLine($"reply:{replyMessage}") ;
     }
 }
