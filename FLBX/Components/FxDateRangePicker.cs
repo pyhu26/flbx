@@ -1,24 +1,17 @@
-﻿using FLBX.Models;
-using Microsoft.AspNetCore.Components;
-using Syncfusion.Blazor.DropDowns;
+﻿using Microsoft.AspNetCore.Components;
+using Syncfusion.Blazor.Calendars;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace FLBX.Components
 {
-    public partial class FxDropDown : ComponentBase,  IFxComponent
+    public partial class FxDateRangePicker : IFxComponent
     {
-        public SfDropDownList<string, DropDownModel> sfDropDownList { get; set; }
-
-        [Parameter]
-        public IEnumerable<DropDownModel> DataSourceValue { get; set; }
-
-        [Parameter]
-        public string PopupHeight { get; set; }
+        public SfDateRangePicker sfDateRangePicker { get; set; }
+        
         [Parameter]
         public string Placeholder { get; set; }
 
@@ -51,7 +44,7 @@ namespace FLBX.Components
                 css += " ";
                 css += "col-lg-" + LargeColSpanValue.ToString();
             }
-            
+
             this.cssClass = css;
 
             StateHasChanged();
@@ -61,9 +54,17 @@ namespace FLBX.Components
 
         public void GetValue()
         {
-
-            throw new NotImplementedException();
+            
         }
+
+        public Dictionary<string, object> GetKeyValues()
+        {
+            return new Dictionary<string, object>() {
+                { "StartDate" , this.sfDateRangePicker.StartDate },
+                { "EndDate", this.sfDateRangePicker.EndDate}
+            };
+        }
+
 
         public void SetAuthority()
         {
