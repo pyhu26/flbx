@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace FLBX.Components
 {
-    public partial class FxDropDown : IFxComponent
+    public partial class FxDropDown : ComponentBase,  IFxComponent
     {
         public SfDropDownList<string, string> fxDropDownList { get; set; }
 

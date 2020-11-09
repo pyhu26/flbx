@@ -1,0 +1,74 @@
+﻿@implements Microsoft.AspNetCore.Components.IComponent
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Calendars
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Cards
+@using Syncfusion.Blazor.Layouts
+@using System.Reflection;
+@using FLBX.Pages
+@using FLBX.Constants
+
+@inject FxUtil fxUtil
+
+<SfSplitter CssClass="@cssClass" Width="@width" Height="@height" SeparatorSize="2">
+    <SplitterPanes>
+        @switch (this.SplitType)
+        {
+            case @SplitContainerType.H3:
+                    <SplitterPane Size= "@ContentsWidth[0]" Min="10%" CssClass="px-3">
+                        <div class="font-weight-bold text-info mb-1"><i class="fas fa fa-bars pr-1"></i> test1 </div>
+                        @ChildContent1
+                    </SplitterPane>
+                    <SplitterPane Size="@ContentsWidth[1]" Min="10%" CssClass="px-3">
+                        <div class="font-weight-bold text-info mb-1"><i class="fas fa fa-bars pr-1"></i> test2 </div>
+                        @ChildContent2
+                    </SplitterPane>
+                    <SplitterPane Size="@ContentsWidth[2]" Min="10%" CssClass="px-3">
+                        <div class="font-weight-bold text-info mb-1"><i class="fas fa fa-bars pr-1"></i> test3 </div>
+                        @ChildContent3
+                    </SplitterPane>
+                break;
+
+            default:
+                break;
+        }
+    </SplitterPanes>
+</SfSplitter>
+
+@code {
+
+    [Parameter]
+    public string[] ContentsWidth { get; set; }
+
+
+    [Parameter]
+    public string[] ContentsMin { get; set; }
+
+    [Parameter]
+    public string SplitType { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent1 { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent2 { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent3 { get; set; }
+
+    [Parameter]
+    public string cssClass { get; set; }
+    [Parameter]
+    public string width { get; set; }
+    [Parameter]
+    public string height { get; set; }
+    [Parameter]
+    public List<Splitter> splitters { get; set; }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+    }
+}

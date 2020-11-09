@@ -25,7 +25,6 @@
 
   <ItemGroup>
     <Folder Include="Abstracts\" />
-    <Folder Include="Constants\" />
   </ItemGroup>
 
 </Project>
