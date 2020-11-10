@@ -10,10 +10,15 @@ namespace FLBX
     public class FxUtil : IfxUtil
     {
 
-        public RenderFragment CreateComponent(string componentName)
+        public RenderFragment CreateComponent( string componentName)
+        {
+            return CreateComponent(null, componentName);
+        }
+
+         public RenderFragment CreateComponent(string? nameSpace, string componentName)
         {
             //todo ylee. 향후 component 배포 기능을 만들때 확장 컴포넌트를 load할 수 있는 정보로 변경 필요
-            string componentNamespace = @"FLBX.Pages"; 
+            string componentNamespace = nameSpace ?? @"FLBX.Pages"; 
             //Blzor Component 로드
             IEnumerable<Type> componentTypes = Assembly.GetCallingAssembly()
                                     .GetTypes().Where(r => r.Namespace == componentNamespace);
@@ -22,7 +27,7 @@ namespace FLBX
 
             if (type == null)
             {
-                throw new NotImplementedException($"Can not find blazor component. Menu id:{componentName}");
+                throw new NotImplementedException($"Can not find blazor component. Component id:{componentName}");
             }
 
             return CreateDynamicComponent(0, type);
@@ -36,7 +41,7 @@ namespace FLBX
         /// <returns></returns>
         RenderFragment CreateDynamicComponent(int seq, Type type) => builder =>
         {
-            builder.OpenComponent(seq, type);
+            builder.OpenComponent(seq, type);            
             builder.CloseComponent();
         };
 

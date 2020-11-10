@@ -8,6 +8,6 @@ namespace FLBX
     public class RuleMessage
     {
         public string RuleName { get; set; }
-        Dictionary<string, object> ParmeterKeyValues { get; set; }
+        public Dictionary<string, object> ParmeterKeyValues { get; set; }
     }
 }

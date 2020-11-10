@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using FLBX.Models;
+using Microsoft.AspNetCore.Components;
 using Syncfusion.Blazor.DropDowns;
 using System;
 using System.Collections.Generic;
@@ -9,9 +10,12 @@ using System.Threading.Tasks;
 
 namespace FLBX.Components
 {
-    public partial class FxDropDown : IFxComponent
+    public partial class FxDropDown : ComponentBase,  IFxComponent
     {
-        public SfDropDownList<string, string> fxDropDownList { get; set; }
+        public SfDropDownList<string, DropDownModel> sfDropDownList { get; set; }
+
+        [Parameter]
+        public IEnumerable<DropDownModel> DataSourceValue { get; set; }
 
         [Parameter]
         public string PopupHeight { get; set; }

@@ -1,0 +1,23 @@
+﻿@using Syncfusion.Blazor.Buttons
+@using FLBX
+
+<div class="row">
+    <div class="col-lg-12 px-0">
+        <div class="card shadow mb-2 border-bottom-primary">
+            <a href="#collapseTopMenu" class="d-block card-header py-2" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseTopMenu">
+                <h6 class="m-0 font-weight-bold text-primary">조회조건 TEST</h6>
+            </a>
+            <div class="collapse show" id="collapseTopMenu" style="">
+                <div class="card-body pb-1">
+
+                        @ChildContent
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+}

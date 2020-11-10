@@ -1,11 +1,16 @@
 ﻿@using Syncfusion.Blazor.DropDowns
+@using FLBX.Models
 
-<div class= "@cssClass">
-    <SfDropDownList @ref="fxDropDownList" TItem="string" TValue="string" PopupHeight=@PopupHeight Placeholder=@Placeholder/>
+<div class="@cssClass">
+    @*<SfDropDownList @ref="fxDropDownList" TValue="string" TItem="DropDownModel" DataSource="@DropDownValue" PopupHeight=@PopupHeight Placeholder=@Placeholder>
+        <DropDownListFieldSettings Text="Name" Value="Id"></DropDownListFieldSettings>
+    </SfDropDownList>*@
+
+    <SfDropDownList TValue="string" TItem="DropDownModel" DataSource="@DataSourceValue" PopupHeight=@PopupHeight Placeholder=@Placeholder>
+        <DropDownListFieldSettings Text="Name" Value="Id"></DropDownListFieldSettings>
+    </SfDropDownList>
 </div>
 
 @code {
-
-    
 
 }

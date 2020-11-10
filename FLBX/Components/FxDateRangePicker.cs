@@ -2,7 +2,6 @@
 using Syncfusion.Blazor.Calendars;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,7 +10,8 @@ namespace FLBX.Components
 {
     public partial class FxDateRangePicker : IFxComponent
     {
-        public SfDateRangePicker fxDateRangePicker { get; set; }
+        public SfDateRangePicker sfDateRangePicker { get; set; }
+        
         [Parameter]
         public string Placeholder { get; set; }
 
@@ -51,13 +51,20 @@ namespace FLBX.Components
         }
 
         public string AuthorityLevel { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-     
 
         public void GetValue()
         {
-
-            throw new NotImplementedException();
+            
         }
+
+        public Dictionary<string, object> GetKeyValues()
+        {
+            return new Dictionary<string, object>() {
+                { "StartDate" , this.sfDateRangePicker.StartDate },
+                { "EndDate", this.sfDateRangePicker.EndDate}
+            };
+        }
+
 
         public void SetAuthority()
         {
