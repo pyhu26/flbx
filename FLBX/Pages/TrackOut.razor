@@ -120,7 +120,7 @@ else
         {
             //Workorder 생산 시작일 필터
             filterDate.sfDateRangePicker.StartDate = DateTime.Now.AddDays(-14);
-            filterDate.sfDateRangePicker.EndDate = DateTime.Now.AddDays(-9);
+            filterDate.sfDateRangePicker.EndDate = DateTime.Now;
 
             //Product 필터
             await GetWorkOrder();
@@ -141,8 +141,8 @@ else
         //Query Message 생성
         QueryMessage queryMessage = new QueryMessage()
         {
-            QueryId = "Inquiry",
-            QueryType = "",
+            QueryId = "GetWorkOrderDp",
+            QueryType = "Filter",
             QueryVersion = "001",
             SiteId = "A_10",
             //ParameterKeyValue = new Dictionary<string, object>() { { "from", "2020-11-01 06:00:00" }, { "to", "2020-11-02 06:00:00" } }
@@ -190,15 +190,18 @@ else
     {
         //Parmeter 생성
         Dictionary<string, object> param = new Dictionary<string, object>();
-        param.Add("from", filterDate.sfDateRangePicker.StartDate.Value.ToString("yyyy-MM-dd"));
-        param.Add("to", filterDate.sfDateRangePicker.EndDate.Value.ToString("yyyy-MM-dd"));
+      
+
+        param.Add("workorder", filterWorkOrder.DataSourceValue.Select(t => t.Id));
+        param.Add("segment", filterSegment.DataSourceValue.Select(t => t.Id));
+        //param.Add("segment", filterSegment.DataSourceValue.Select(t=>t.Name));
 
 
         //Query Message 생성
         QueryMessage queryMessage = new QueryMessage()
         {
-            QueryId = "GetWorkOrderDp",
-            QueryType = "Filter",
+            QueryId = "GetLotListToTrackOut",
+            QueryType = "Inquiry",
             QueryVersion = "001",
             SiteId = "A_10",
             //ParameterKeyValue = new Dictionary<string, object>() { { "from", "2020-11-01 06:00:00" }, { "to", "2020-11-02 06:00:00" } }
