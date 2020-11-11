@@ -1,0 +1,271 @@
+﻿@page "/trackIn"
+
+@inject FxUtil fxUtil
+@inject IJSRuntime jsRuntime;
+
+@implements Microsoft.AspNetCore.Components.IComponent
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Calendars
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Cards
+@using Syncfusion.Blazor.Layouts
+
+@using System.Text.Json
+@using FLBX.Components
+@using FLBX.Models
+
+@inject MessageService messageService
+
+<FLBX.Components.FxFilterGroup>
+
+    <div class="row">
+
+        <FxDateRangePicker @ref="@filterDate" MediumColSpanValue="3" Placeholder="생산시작일(기간)" Onclose="@OncloseDate"></FxDateRangePicker>
+        <FxDropDown @ref="@filterWorkOrder" DataSourceValue="@Workorders" MediumColSpanValue="3" Placeholder="Work Order"></FxDropDown>
+        <FxTextBox @ref="@filterLotId" MediumColSpanValue="3" Placeholder="Lot Id 검색 "> </FxTextBox>
+        <FxTextBox @ref="@filterLotName" MediumColSpanValue="3" Placeholder="Lot 이름 검색 "> </FxTextBox>
+    </div>
+    <div class="row d-flex justify-content-end">
+        <div class="p-2">
+            <FLBX.Components.FxFilterButtons>
+                <SfButton IsPrimary="true" OnClick="@GetLotInfo">조회</SfButton>
+                <SfButton CssClass="e-danger" OnClick="@Trackin">작업시작</SfButton>
+            </FLBX.Components.FxFilterButtons>
+
+            <FxToast @ref="@toast" ToastTitle="Information" ToastTimeOut="3000" ToastContent="@ToastMessage"></FxToast>
+        </div>
+    </div>
+
+</FLBX.Components.FxFilterGroup>
+@*TOP Menu -End- *@
+
+@*Main  Content *@
+<div class="row">
+    <div class="col-lg-12 px-0">
+        <div class="control_wrapper shadow mb-4">
+
+            <div class="font-weight-bold text-info mb-1"><i class="fas fa fa-bars pr-1"></i>생산Lot</div>
+            <SfGrid @ref="LotGrid" DataSource="@GridDataLot" Toolbar="@(new List<string>() { "Edit", "Update", "Cancel" })" AllowPaging="true">
+                <GridSelectionSettings CheckboxOnly="true" PersistSelection="true"></GridSelectionSettings>
+                <GridEditSettings AllowEditing="true"></GridEditSettings>
+                <GridColumns>
+                    <GridColumn Type="ColumnType.CheckBox" Width="50"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.LOTID ) HeaderText="LOTID" Width="100"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.LOTNAME ) HeaderText="LOTNAME" Width="100"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.STATE ) HeaderText="STATE" Width="100"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.PREVSTATE ) HeaderText="PREVSTATE" Width="100"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.QTY ) HeaderText="QTY" TextAlign="TextAlign.Right" Width="30"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.WORKORDERID ) HeaderText="WORKORDERID" Width="100"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.SITEID ) HeaderText="SITEID" Width="100"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.PRODUCTORDERID ) HeaderText="PRODUCTORDERID" Width="100"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.PRODUCTDEFINITIONID ) HeaderText="PRODUCTDEFINITIONID" Width="100"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.PROCESSDEFINITIONID ) HeaderText="PROCESSDEFINITIONID" Width="100"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.SUBPROCESSDEFINITIONID ) HeaderText="SUBPROCESSDEFINITIONID" Width="100"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.PROCESSNODEID ) HeaderText="PROCESSNODEID" Width="100"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.PROCESSSEGMENTID ) HeaderText="PROCESSSEGMENTID" Width="100"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.PROCESSSEGMENTRULEID ) HeaderText="PROCESSSEGMENTRULEID" Width="100"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.PROCESSINGSTATE ) HeaderText="PROCESSINGSTATE" Width="100"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.ISHOLD ) HeaderText="ISHOLD" Width="100"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.ISREWORK ) HeaderText="ISREWORK" Width="100"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.ISRESERVEDFUTUREACTION ) HeaderText="ISRESERVEDFUTUREACTION" Width="100"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.MAINPROCESSDEFINITIONID ) HeaderText="MAINPROCESSDEFINITIONID" Width="100"></GridColumn>
+                </GridColumns>
+            </SfGrid>
+
+        </div>
+    </div>
+</div>
+
+@*Main  Content End *@
+
+@if (this.Lots != null)
+{
+    foreach (var item in this.Lots)
+    {
+        <div>@item.LOTID</div>
+        <div>@item.LOTNAME</div>
+        <div>@item.STATE</div>
+    }
+}
+else
+{
+    <div> Loadings.. </div>
+}
+
+
+@code {
+
+    #region Components
+
+    FxDateRangePicker filterDate;
+    FxDropDown filterWorkOrder;
+    FxTextBox filterLotId;
+    FxTextBox filterLotName;
+    FxToast toast;
+
+    public SfGrid<LotModel> LotGrid { get; set; }
+
+    #endregion
+
+    IEnumerable<DropDownModel> Workorders { get; set; }
+    List<LotModel> Lots { get; set; }
+
+    public string ToastMessage { get; set; }
+
+    void Attach(RenderHandle renderHandle) { }
+
+    async Task SetParametersAsync(ParameterView parameters) { }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        base.OnAfterRenderAsync(firstRender);
+
+        //filter 초기값 입력
+        if (firstRender)
+        {
+            //Workorder 생산 시작일 필터
+            filterDate.sfDateRangePicker.StartDate = DateTime.Now.AddDays(-14);
+            filterDate.sfDateRangePicker.EndDate = DateTime.Now;
+
+            //Workorder 필터
+            await GetWorkorders();
+            StateHasChanged();
+        }
+    }
+
+    public List<LotModel> GridDataLot { get; set; }
+    private bool isChecked = true;
+
+    protected override void OnInitialized()
+    {
+        //GridData = WorkOrderDetails.GetAllRecords();
+        //GridDataLot = Lot.GetAllRecords();
+    }
+
+    private async Task OncloseDate(object args)
+    {
+        await GetWorkorders();
+        StateHasChanged();
+    }
+
+
+    private async Task GetWorkorders()
+    {
+        Dictionary<string, object> param = new Dictionary<string, object>();
+        param.Add("from", filterDate.sfDateRangePicker.StartDate.Value.ToString("yyyy-MM-dd"));
+        param.Add("to", filterDate.sfDateRangePicker.EndDate.Value.ToString("yyyy-MM-dd"));
+
+        //Query Message 생성
+        QueryMessage queryMessage = new QueryMessage()
+        {
+            QueryId = "GetWorkOrderDp",
+            QueryType = "Filter",
+            QueryVersion = "001",
+            SiteId = "A_10",
+            ParameterKeyValue = param
+
+        };
+
+        FLMessageSet messageSet = messageService.CreateMessageSet(MeesageType.Query, queryMessage, null, null);
+
+        //Message Send
+        var task = messageService.SendMessageAsync("Product", "/query/executequery", messageSet);
+        await Task.WhenAll(task);
+        ReplyMessage reply = task.Result;
+
+        //Reply Message Binding
+        this.Workorders = JsonSerializer.Deserialize<IEnumerable<DropDownModel>>(Convert.ToString(reply.ResultKeyValues["reply"]));
+    }
+
+    /// <summary>
+    /// GetLotInfo
+    /// </summary>
+    /// <param name="arg"></param>
+    /// <returns></returns>
+    private async Task GetLotInfo(MouseEventArgs arg)
+    {
+        //Parmeter 생성
+        Dictionary<string, object> param = new Dictionary<string, object>();
+        param.Add("workorder", filterWorkOrder.sfDropDownList.Value);
+
+
+        //Query Message 생성
+        QueryMessage queryMessage = new QueryMessage()
+        {
+            QueryId = "GetLot",
+            QueryType = "Inquiry",
+            QueryVersion = "001",
+            SiteId = "A_10",
+            ParameterKeyValue = param
+        };
+
+        FLMessageSet messageSet = messageService.CreateMessageSet(MeesageType.Query, queryMessage, null, null);
+
+        //Message Send
+        var task = messageService.SendMessageAsync("Product", "/query/executequery", messageSet);
+        await Task.WhenAll(task);
+        ReplyMessage reply = task.Result;
+
+        //Reply Message Binding
+        this.GridDataLot = JsonSerializer.Deserialize<List<LotModel>>(Convert.ToString(reply.ResultKeyValues["reply"]));
+    }
+
+    async Task Trackin(MouseEventArgs arg)
+    {
+        this.Lots = this.LotGrid.SelectedRecords;
+        Console.WriteLine(this.Lots.ToString());
+
+        //Parmeter 생성
+        Dictionary<string, object> param = new Dictionary<string, object>();
+        param.Add("lot", this.Lots);
+
+
+
+
+        RuleMessage ruleMessage = new RuleMessage()
+        {
+            RuleName = "TrackIn",
+            ParmeterKeyValues = param
+        };
+
+        FLMessageSet messageSet = messageService.CreateMessageSet(MeesageType.Query, null, ruleMessage, null);
+
+        //Message Send
+        var task = messageService.SendMessageAsync("Product", "/api/TrackIn", messageSet);
+        await Task.WhenAll(task);
+        ReplyMessage reply = task.Result;
+
+        //Reply Message Binding
+        string replyMessage = Convert.ToString(reply.ResultKeyValues["reply"]);
+
+        this.ToastMessage = $"TrackIn Lot : {replyMessage} ea";
+        await toast.fxToast.Show();
+    }
+
+    public class LotModel
+    {
+        public string LOTID { get; set; }
+        public string LOTNAME { get; set; }
+        public string STATE { get; set; }
+        public string PREVSTATE { get; set; }
+        public float QTY { get; set; }
+        public string WORKORDERID { get; set; }
+        public string SITEID { get; set; }
+        public string PRODUCTORDERID { get; set; }
+        public string PRODUCTDEFINITIONID { get; set; }
+        public string PROCESSDEFINITIONID { get; set; }
+        public string SUBPROCESSDEFINITIONID { get; set; }
+        public string PROCESSNODEID { get; set; }
+        public string PROCESSSEGMENTID { get; set; }
+        public string PROCESSSEGMENTRULEID { get; set; }
+        public string PROCESSINGSTATE { get; set; }
+        public string ISHOLD { get; set; }
+        public string ISREWORK { get; set; }
+        public string ISRESERVEDFUTUREACTION { get; set; }
+        public string MAINPROCESSDEFINITIONID { get; set; }
+
+    }
+}

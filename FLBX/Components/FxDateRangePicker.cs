@@ -25,6 +25,9 @@ namespace FLBX.Components
 
         public string cssClass { get; set; }
 
+        [Parameter]
+        public EventCallback Onclose { get; set; }
+
         protected override void OnParametersSet()
         {
             base.OnParametersSet();
