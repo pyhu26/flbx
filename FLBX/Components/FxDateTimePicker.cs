@@ -11,9 +11,15 @@ namespace FLBX.Components
 {
     public partial class FxDateTimePicker : IFxComponent
     {
-        public SfDateTimePicker<string> fxDateTimePicker { get; set; }
+        public SfDateTimePicker<DateTime?> sfDateTimePicker { get; set; }
         [Parameter]
         public string Placeholder { get; set; }
+        [Parameter]
+        public DateTime MinDateTime { get; set; }
+        [Parameter]
+        public DateTime MaxDateTime { get; set; }
+        [Parameter]
+        public DateTime? DateTimeValue { get; set; }
 
         [Parameter]
         public int SmallColSpanValue { get; set; }
@@ -51,8 +57,8 @@ namespace FLBX.Components
         }
 
         public string AuthorityLevel { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        
 
+      
         public void GetValue()
         {
 
