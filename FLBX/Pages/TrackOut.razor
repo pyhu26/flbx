@@ -6,49 +6,32 @@
 @using Syncfusion.Blazor.Inputs
 @using Syncfusion.Blazor.Cards
 @using Syncfusion.Blazor.Layouts
+@using FLBX.Components
+@using FLBX.Models
+@using System.Text.Json
+@inject MessageService messageService
 
+<FLBX.Components.FxFilterGroup>
 
+    <div class="row">
+        <FxDateRangePicker @ref="@filterDate" MediumColSpanValue="3" Placeholder="생산시작일(기간)"></FxDateRangePicker>
+        <FxDropDown @ref="@filterWorkOrder"  DataSourceValue="@WorkOrders" MediumColSpanValue="3" Placeholder="Work Order"></FxDropDown>
+        <FxDropDown @ref="@filterSegment" DataSourceValue="@Segment" MediumColSpanValue="2" Placeholder="공정" PopupHeight="230px"></FxDropDown>
+        <FxTextBox @ref="@filterLotId" MediumColSpanValue="2" Placeholder="Lot Id검색:"></FxTextBox>
+        <FxTextBox @ref="@filterLotName" MediumColSpanValue="2" Placeholder="Lot이름검색:"></FxTextBox>
+    </div>
+    <div class="row d-flex justify-content-end">
+        <div class="p-2">
+            <FLBX.Components.FxFilterButtons>
+                <SfButton IsPrimary="true" OnClick="@GetLotToTrackOutList">조회</SfButton>
+                <SfButton CssClass="e-danger" OnClick="@TrackOutLotStart">작업종료</SfButton>
+            </FLBX.Components.FxFilterButtons>
 
-<div class="row">
-    <div class="col-lg-12 px-0">
-        <div class="card shadow mb-2 border-bottom-primary">
-            <a href="#collapseTopMenu" class="d-block card-header py-2" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseTopMenu">
-                <h6 class="m-0 font-weight-bold text-primary">조회조건</h6>
-            </a>
-            <div class="collapse show" id="collapseTopMenu" style="">
-                <div class="card-body pb-1">
-                    <div class="row">
-                        <div class="col-xl-2">
-                            <SfDateRangePicker Placeholder="생산시작일(기간)"></SfDateRangePicker>
-                        </div>
-
-                        <div class="col-xl-2">
-                            <SfDropDownList TItem="string" TValue="string" PopupHeight="230px" Placeholder="WorkOrder">
-                            </SfDropDownList>
-                        </div>
-                        <div class="col-xl-2">
-                            <SfDropDownList TItem="string" TValue="string" PopupHeight="230px" Placeholder="공정">
-                            </SfDropDownList>
-                        </div>
-                        <div class="col-xl-2">
-                            <SfTextBox Placeholder="Lot Id검색.." FloatLabelType="@FloatLabelType.Never"></SfTextBox>
-                        </div>
-                        <div class="col-xl-2">
-                            <SfTextBox Placeholder="Lot이름검색:" FloatLabelType="@FloatLabelType.Never"></SfTextBox>
-                        </div>
-                    </div>
-                    <div class="row d-flex justify-content-end">
-                        <div class="p-2">
-                            <SfButton IsPrimary="true">조회</SfButton>
-                            <SfButton CssClass="e-danger">작업종료</SfButton>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <FxToast @ref="@toast" ToastTitle="Information" ToastTimeOut="3000" ToastContent="@ToastMessage"></FxToast>
         </div>
     </div>
-</div>
-@*TOP Menu -End- *@
+</FLBX.Components.FxFilterGroup>
+
 
 @*Main  Content *@
 <div class="row">
@@ -56,35 +39,191 @@
         <div class="control_wrapper shadow mb-4">
 
             <div class="font-weight-bold text-info mb-1"><i class="fas fa fa-bars pr-1"></i>생산Lot</div>
-            <SfGrid DataSource="@GridData" Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })" AllowPaging="true">
-                <GridSelectionSettings CheckboxOnly="true" PersistSelection="true"></GridSelectionSettings>
-                <GridEditSettings AllowAdding="true" AllowDeleting="true" AllowEditing="true"></GridEditSettings>
+            @*<SfGrid DataSource="@GridData" Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })" AllowPaging="true">
+                    <GridSelectionSettings CheckboxOnly="true" PersistSelection="true"></GridSelectionSettings>
+                    <GridEditSettings AllowAdding="true" AllowDeleting="true" AllowEditing="true"></GridEditSettings>
+                    <GridColumns>
+                        <GridColumn Type="ColumnType.CheckBox" Width="50"></GridColumn>
+                        <GridColumn Field=@nameof(WorkOrderDetails.Id) HeaderText="WorkOrderId" Width="100"></GridColumn>
+                        <GridColumn Field=@nameof(WorkOrderDetails.WorkOrder) HeaderText="Name" TextAlign="TextAlign.Right" Width="50"></GridColumn>
+                        <GridColumn Field=@nameof(WorkOrderDetails.Qty) HeaderText="수량" Width="50"></GridColumn>
+                        <GridColumn Field=@nameof(WorkOrderDetails.Pruduct) HeaderText="Product" Width="80"></GridColumn>
+                    </GridColumns>
+                </SfGrid>*@
+            <SfGrid DataSource="@TrackOutLot" Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })" AllowGrouping="true" AllowPaging="true" AllowTextWrap="true" AllowRowDragAndDrop="true" AllowResizing="true" AllowReordering="true" AllowFiltering="true">
                 <GridColumns>
                     <GridColumn Type="ColumnType.CheckBox" Width="50"></GridColumn>
-                    <GridColumn Field=@nameof(WorkOrderDetails.Id) HeaderText="WorkOrderId" Width="100"></GridColumn>
-                    <GridColumn Field=@nameof(WorkOrderDetails.WorkOrder) HeaderText="Name" TextAlign="TextAlign.Right" Width="50"></GridColumn>
-                    <GridColumn Field=@nameof(WorkOrderDetails.Qty) HeaderText="수량" Width="50"></GridColumn>
-                    <GridColumn Field=@nameof(WorkOrderDetails.Pruduct) HeaderText="Product" Width="80"></GridColumn>
+                    <GridColumn Field="LOTID" IsPrimaryKey="true" HeaderText="LotId" Width="100"></GridColumn>
+                    <GridColumn Field="LOTNAME" HeaderText="이름" TextAlign="TextAlign.Right" Width="50"></GridColumn>
+                    <GridColumn Field="QTY" HeaderText="수량" Width="50"></GridColumn>
+                    <GridColumn Field="PROCESSSEGMENTID" HeaderText="공정" Width="80"></GridColumn>
+                    <GridColumn Field="EQUIPMENTID" HeaderText="설비" Width="80"></GridColumn>
                 </GridColumns>
             </SfGrid>
-
         </div>
     </div>
 </div>
 
 @*Main  Content End *@
 
+
+@*@if (this.WorkOrders != null)
+{
+    foreach (var item in this.WorkOrders)
+    {
+        <div>@item.Name</div>
+    }
+}
+else
+{
+    <div> Loadings.. </div>
+}*@
+
+
+
 @code {
+
+    #region Components
+
+    FxDateRangePicker filterDate;
+    FxDropDown filterSegment;
+    FxDropDown filterWorkOrder;
+    FxTextBox filterLotId;
+    FxTextBox filterLotName;
+    FxToast toast;
+
+    #endregion
+    IEnumerable<DropDownModel> Products { get; set; }
+    IEnumerable<DropDownModel> WorkOrders { get; set; }
+
+    IEnumerable<DropDownModel> Segment { get; set; }
+
+    List<Lot> TrackOutLot { get; set; }
+
+    public string ToastMessage { get; set; }
+
+    public string selectedWorkorderId { get; set; }
+
+
+
     void Attach(RenderHandle renderHandle) { }
 
-    async Task SetParametersAsync(ParameterView parameters) { }
 
-    public List<WorkOrderDetails> GridData { get; set; }
-    public List<Lot> GridDataLot { get; set; }
-    private bool isChecked = true;
-    protected override void OnInitialized()
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        GridData = WorkOrderDetails.GetAllRecords();
-        GridDataLot = Lot.GetAllRecords();
+
+        base.OnAfterRenderAsync(firstRender);
+
+        //filter 초기값 입력
+        if (firstRender)
+        {
+            //Workorder 생산 시작일 필터
+            filterDate.sfDateRangePicker.StartDate = DateTime.Now.AddDays(-14);
+            filterDate.sfDateRangePicker.EndDate = DateTime.Now;
+
+            //Product 필터
+            await GetWorkOrder();
+            //segement필터
+            await GetSegment();
+
+            StateHasChanged();
+        }
     }
+    private async Task GetWorkOrder()
+    {
+        //Parmeter 생성
+        Dictionary<string, object> param = new Dictionary<string, object>();
+        param.Add("from", filterDate.sfDateRangePicker.StartDate.Value.ToString("yyyy-MM-dd"));
+        param.Add("to", filterDate.sfDateRangePicker.EndDate.Value.ToString("yyyy-MM-dd"));
+
+
+        //Query Message 생성
+        QueryMessage queryMessage = new QueryMessage()
+        {
+            QueryId = "GetWorkOrderDp",
+            QueryType = "Filter",
+            QueryVersion = "001",
+            SiteId = "A_10",
+            //ParameterKeyValue = new Dictionary<string, object>() { { "from", "2020-11-01 06:00:00" }, { "to", "2020-11-02 06:00:00" } }
+            ParameterKeyValue = param
+        };
+
+        FLMessageSet messageSet = messageService.CreateMessageSet(MeesageType.Query, queryMessage, null, null);
+
+        //Message Send
+        var task = messageService.SendMessageAsync("Product", "/query/executequery", messageSet);
+        await Task.WhenAll(task);
+        ReplyMessage reply = task.Result;
+
+        //Reply Message Binding
+        this.WorkOrders = JsonSerializer.Deserialize<IEnumerable<DropDownModel>>(Convert.ToString(reply.ResultKeyValues["reply"]));
+
+    }
+
+    private async Task GetSegment()
+    {
+        //Query Message 생성
+        QueryMessage queryMessage = new QueryMessage()
+        {
+            QueryId = "GetProcessSegment",
+            QueryType = "Filter",
+            QueryVersion = "001",
+            SiteId = "A_10",
+            //ParameterKeyValue = new Dictionary<string, object>() { { "from", "2020-11-01 06:00:00" }, { "to", "2020-11-02 06:00:00" } }
+            ParameterKeyValue = new Dictionary<string, object>()
+
+        };
+
+        FLMessageSet messageSet = messageService.CreateMessageSet(MeesageType.Query, queryMessage, null, null);
+
+        //Message Send
+        var task1 = messageService.SendMessageAsync("Product", "/query/executequery", messageSet);
+        await Task.WhenAll(task1);
+        ReplyMessage reply = task1.Result;
+
+        //Reply Message Binding
+        this.Segment = JsonSerializer.Deserialize<IEnumerable<DropDownModel>>(Convert.ToString(reply.ResultKeyValues["reply"]));
+
+    }
+    private async Task GetLotToTrackOutList()
+    {
+        //Parmeter 생성
+        Dictionary<string, object> param = new Dictionary<string, object>();
+      
+
+        param.Add("workorder", filterWorkOrder.DataSourceValue.Select(t => t.Id));
+        param.Add("segment", filterSegment.DataSourceValue.Select(t => t.Id));
+        //param.Add("segment", filterSegment.DataSourceValue.Select(t=>t.Name));
+
+
+        //Query Message 생성
+        QueryMessage queryMessage = new QueryMessage()
+        {
+            QueryId = "GetLotListToTrackOut",
+            QueryType = "Inquiry",
+            QueryVersion = "001",
+            SiteId = "A_10",
+            //ParameterKeyValue = new Dictionary<string, object>() { { "from", "2020-11-01 06:00:00" }, { "to", "2020-11-02 06:00:00" } }
+            ParameterKeyValue = param
+        };
+
+        FLMessageSet messageSet = messageService.CreateMessageSet(MeesageType.Query, queryMessage, null, null);
+
+        //Message Send
+        var task = messageService.SendMessageAsync("Product", "/query/executequery", messageSet);
+        await Task.WhenAll(task);
+        ReplyMessage reply = task.Result;
+
+        //Reply Message Binding
+        this.TrackOutLot = JsonSerializer.Deserialize<List<Lot>>(Convert.ToString(reply.ResultKeyValues["reply"]));
+
+    }
+
+    private async Task TrackOutLotStart()
+    {
+
+
+    }
+
 }
