@@ -4,6 +4,7 @@ using Syncfusion.Blazor.DropDowns;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,6 +20,10 @@ namespace FLBX.Components
 
         [Parameter]
         public string PopupHeight { get; set; }
+
+        [Parameter]
+        public string PopupWidth { get; set; } = "500px";
+
         [Parameter]
         public string Placeholder { get; set; }
 
@@ -29,6 +34,12 @@ namespace FLBX.Components
         public int MediumColSpanValue { get; set; }
         [Parameter]
         public int LargeColSpanValue { get; set; }
+
+        [Parameter]
+        public bool IsMandantory { get; set; }
+
+        [Parameter]
+        public string InnerCssClass { get; set; } = "e-multi-column";
 
         public string cssClass { get; set; }
 
@@ -52,9 +63,12 @@ namespace FLBX.Components
                 css += "col-lg-" + LargeColSpanValue.ToString();
             }
             
-            this.cssClass = css;
+            cssClass = css;
 
-            StateHasChanged();
+            if (IsMandantory)
+            {
+                InnerCssClass += " e-success";
+            }
         }
 
         public string AuthorityLevel { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }

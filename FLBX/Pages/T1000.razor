@@ -23,9 +23,8 @@
 <FLBX.Components.FxFilterGroup>
 
     <div class="row">
-
         <FxDateRangePicker @ref="@filterDate" MediumColSpanValue="3" Placeholder="Workorder 작업 시작 일자"></FxDateRangePicker>
-        <FxDropDown @ref="@filterProduct" DataSourceValue="@Products" MediumColSpanValue="3" Placeholder="제품"></FxDropDown>
+        <FxDropDown @ref="@filterProduct" IsMandantory="true" DataSourceValue="@Products" MediumColSpanValue="3" Placeholder="제품" PopupHeight="500px"></FxDropDown>
         <FxDropDown @ref="@filterPo" MediumColSpanValue="3" Placeholder="Productorder"></FxDropDown>
         <FxTextBox @ref="@filterWoName" MediumColSpanValue="3" Placeholder="Workorder 이름 "> </FxTextBox>
     </div>
@@ -48,14 +47,14 @@
             <FxSplitContainer ContentsWidth="@(new string[]{"40%","10%","50%"})" SplitType="@FLBX.Constants.SplitContainerType.H3" cssClass="out-splitter py-3" width="100%" height="100%">
 
                 <ChildContent1>
-                    <SfGrid DataSource="@Workorders" RowHeight="30" AllowExcelExport="true" AllowPaging="true" AllowTextWrap="true" AllowRowDragAndDrop="true" AllowResizing="true" AllowReordering="true" AllowFiltering="true">
+                    <SfGrid DataSource="@Workorders" Height="400px" RowHeight="30" AllowExcelExport="true" AllowPaging="true" AllowReordering="true" AllowFiltering="true">
                         <GridEvents RowSelected="RowSelectedHandler" TValue="TempModel"></GridEvents>
                         <GridColumns>
-                            <GridColumn Field="WORKORDERID" IsPrimaryKey="true" HeaderText="ID" Width="200"></GridColumn>
-                            <GridColumn Field="WORKORDERNAME" HeaderText="NAME" TextAlign="TextAlign.Right" Width="200"></GridColumn>
-                            <GridColumn Field="QTY" HeaderText="QTY" Width="100"></GridColumn>
-                            <GridColumn Field="PRODUCTDEFINITIONID" HeaderText="PRODUCT" Width="200"></GridColumn>
-                            <GridColumn Field="PRODUCTORDERID" HeaderText="PO" Width="200"></GridColumn>
+                            <GridColumn Field="WORKORDERID" IsPrimaryKey="true" HeaderText="ID"  AutoFit="true" ></GridColumn>
+                            <GridColumn Field="WORKORDERNAME" HeaderText="NAME"   AutoFit="true"></GridColumn>
+                            <GridColumn Field="QTY" HeaderText="QTY"   AutoFit="true"></GridColumn>
+                            <GridColumn Field="PRODUCTDEFINITIONID" HeaderText="PRODUCT"   AutoFit="true"></GridColumn>
+                            <GridColumn Field="PRODUCTORDERID" HeaderText="PO"   AutoFit="true"></GridColumn>
                         </GridColumns>
                     </SfGrid>
                 </ChildContent1>
@@ -101,9 +100,9 @@
     </div>
 </div>
 
-@if (this.Products != null)
+@if (Products != null)
 {
-    foreach (var item in this.Products)
+    foreach (var item in Products)
     {
         <div>@item.Name</div>
     }
@@ -142,7 +141,6 @@ else
 
     async Task SetParametersAsync(ParameterView parameters) { }
 
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
 
@@ -155,11 +153,20 @@ else
             filterDate.sfDateRangePicker.StartDate = DateTime.Now.AddDays(-7);
             filterDate.sfDateRangePicker.EndDate = DateTime.Now;
 
-            //Product 필터
             await GetProductInfo();
-            StateHasChanged();
+            this.filterProduct.sfDropDownList.AddItem(Products);
         }
     }
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitializedAsync();
+
+        //Product 필터
+
+    }
+
+
 
     private async Task GetProductInfo()
     {
@@ -183,7 +190,7 @@ else
         ReplyMessage reply = task1.Result;
 
         //Reply Message Binding
-        this.Products = JsonSerializer.Deserialize<IEnumerable<DropDownModel>>(Convert.ToString(reply.ResultKeyValues["reply"]));
+        Products = JsonSerializer.Deserialize<IEnumerable<DropDownModel>>(Convert.ToString(reply.ResultKeyValues["reply"]));
     }
 
     /// <summary>
@@ -218,17 +225,17 @@ else
         ReplyMessage reply = task.Result;
 
         //Reply Message Binding
-        this.Workorders = JsonSerializer.Deserialize<List<TempModel>>(Convert.ToString(reply.ResultKeyValues["reply"]));
+        Workorders = JsonSerializer.Deserialize<List<TempModel>>(Convert.ToString(reply.ResultKeyValues["reply"]));
     }
 
     void RowSelectedHandler(RowSelectEventArgs<TempModel> arg)
     {
-        this.selectedWorkorderId = arg.Data.WORKORDERID;
+        selectedWorkorderId = arg.Data.WORKORDERID;
     }
 
     void TemporaryCreateLot(MouseEventArgs arg)
     {
-        this.Lots = new List<Lot>();
+        Lots = new List<Lot>();
 
         int count = Convert.ToInt32(spinLotCount.Value);
         int qty = Convert.ToInt32(spinLotQty.Value);
@@ -241,7 +248,7 @@ else
             newLot.Segment = "setment01";
             newLot.Equitment = "eqp001";
 
-            this.Lots.Add(newLot);
+            Lots.Add(newLot);
         }
     }
 
@@ -249,7 +256,7 @@ else
     {
         //Parmeter 생성
         Dictionary<string, object> param = new Dictionary<string, object>();
-        param.Add("lot", this.Lots);
+        param.Add("lot", Lots);
 
         RuleMessage ruleMessage = new RuleMessage()
         {
@@ -267,7 +274,7 @@ else
         //Reply Message Binding
         string replyMessage = Convert.ToString(reply.ResultKeyValues["reply"]);
 
-        this.ToastMessage = $"Create Lot : {replyMessage} ea";
+        ToastMessage = $"Create Lot : {replyMessage} ea";
         await toast.fxToast.Show();
     }
 
