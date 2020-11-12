@@ -61,7 +61,6 @@ namespace FLBX.Components
 
         public void GetValue()
         {
-
             throw new NotImplementedException();
         }
 

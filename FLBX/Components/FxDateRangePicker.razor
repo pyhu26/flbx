@@ -2,7 +2,9 @@
 @using Syncfusion.Blazor.Calendars
 
 <div class="@cssClass">
-    <SfDateRangePicker @ref="sfDateRangePicker" Placeholder="Choose a Range" ></SfDateRangePicker>
+    <SfDateRangePicker @ref="sfDateRangePicker" Placeholder="Choose a Range">
+        <DateRangePickerEvents OnClose="@Onclose"></DateRangePickerEvents>
+    </SfDateRangePicker>
 </div>
 
     @*<div class="control-section">
