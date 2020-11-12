@@ -6,7 +6,7 @@
         <DropDownListFieldSettings Text="Name" Value="Id"></DropDownListFieldSettings>
     </SfDropDownList>*@
 
-    <SfDropDownList TValue="string" TItem="DropDownModel" DataSource="@DataSourceValue" PopupHeight=@PopupHeight Placeholder=@Placeholder>
+    <SfDropDownList @ref="sfDropDownList" TValue="string" TItem="DropDownModel" DataSource="@DataSourceValue" PopupHeight=@PopupHeight Placeholder=@Placeholder>
         <DropDownListFieldSettings Text="Name" Value="Id"></DropDownListFieldSettings>
     </SfDropDownList>
 </div>
