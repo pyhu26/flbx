@@ -1,9 +1,9 @@
-﻿@page "/7100"
-
+﻿
 @inject FxUtil fxUtil
 @inject IJSRuntime jsRuntime;
 
 @implements Microsoft.AspNetCore.Components.IComponent
+@using Syncfusion.Blazor.Calendars;
 @using Syncfusion.Blazor.Grids
 @using Syncfusion.Blazor.DropDowns
 @using Syncfusion.Blazor.Buttons
@@ -23,7 +23,8 @@
 <FLBX.Components.FxFilterGroup>
 
     <div class="row">
-        <FxDateRangePicker @ref="@filterDate" MediumColSpanValue="3" Placeholder="Workorder 작업 시작 일자"></FxDateRangePicker>
+        <FxDateRangePicker @ref="@filterDate" StartDate="@StartDate" EndDate="@EndDate"
+                            MediumColSpanValue="3" Placeholder="Workorder 작업 시작 일자" ></FxDateRangePicker>
         <FxDropDown @ref="@filterProduct" IsMandantory="true" DataSourceValue="@Products" MediumColSpanValue="3" Placeholder="제품" PopupHeight="500px"></FxDropDown>
         <FxDropDown @ref="@filterPo" MediumColSpanValue="3" Placeholder="Productorder"></FxDropDown>
         <FxTextBox @ref="@filterWoName" MediumColSpanValue="3" Placeholder="Workorder 이름 "> </FxTextBox>
@@ -46,14 +47,14 @@
 
 <div class="row">
     <div class="col-lg-12 px-0">
-        <div class="control_wrapper shadow mb-4" style="height: 630px;">
-            <FxSplitContainer ContentsWidth="@(new string[]{"40%","10%","50%"})" SplitType="@FLBX.Constants.SplitContainerType.H3" cssClass="out-splitter py-3" width="100%" height="100%">
+        <div class="control_wrapper shadow mb-4" style="height: 620px;">
+            <FxSplitContainer ContentsWidth="@(new string[]{"20%","10%","70%"})" SplitType="@FLBX.Constants.SplitContainerType.H3" cssClass="out-splitter py-3" width="100%" height="100%">
 
                 <ChildContent1>
-                    <SfGrid DataSource="@Workorders" Height="400px" RowHeight="30" AllowExcelExport="true" AllowPaging="true" AllowReordering="true" AllowFiltering="true">
+                    <SfGrid DataSource="@Workorders" Height="300px" RowHeight="30" AllowExcelExport="true" AllowPaging="true" AllowReordering="true" AllowFiltering="true">
                         <GridEvents RowSelected="RowSelectedHandler" TValue="TempModel"></GridEvents>
                         <GridColumns>
-                            <GridColumn Field="WORKORDERID" IsPrimaryKey="true" HeaderText="ID" AutoFit="true">
+                            <GridColumn Field="WORKORDERID" IsPrimaryKey="true" HeaderText="ID" AllowResizing="true">
                                 <Template>
                                     @{
                                         var wo = (context as TempModel);
@@ -65,16 +66,16 @@
                                                     <div id="txt">PO : @wo.PRODUCTORDERID</div>
                                                 </Content>
                                             </TooltipTemplates>
-                                            <span id="txt">Name : @wo.WORKORDERID</span>
-                                            <span id="txt">Name : @wo.WORKORDERNAME</span>
+                                            <span id="txt">@wo.WORKORDERID</span>
+                                            <span id="txt"> (Name :@wo.WORKORDERNAME)</span>
                                         </SfTooltip>
                                     }
                                 </Template>
                             </GridColumn>
                             @*<GridColumn Field="WORKORDERNAME" HeaderText="NAME" AutoFit="true"></GridColumn>
-                            <GridColumn Field="QTY" HeaderText="QTY" AutoFit="true"></GridColumn>
-                            <GridColumn Field="PRODUCTDEFINITIONID" HeaderText="PRODUCT" AutoFit="true"></GridColumn>
-                            <GridColumn Field="PRODUCTORDERID" HeaderText="PO" AutoFit="true"></GridColumn>*@
+                                <GridColumn Field="QTY" HeaderText="QTY" AutoFit="true"></GridColumn>
+                                <GridColumn Field="PRODUCTDEFINITIONID" HeaderText="PRODUCT" AutoFit="true"></GridColumn>
+                                <GridColumn Field="PRODUCTORDERID" HeaderText="PO" AutoFit="true"></GridColumn>*@
                         </GridColumns>
                     </SfGrid>
                 </ChildContent1>
@@ -148,6 +149,8 @@
 
     #endregion
 
+    DateTime StartDate = DateTime.Now.AddDays(-7);
+    DateTime EndDate = DateTime.Now;
 
     IEnumerable<DropDownModel> Products { get; set; }
     List<TempModel> Workorders { get; set; }
@@ -158,16 +161,29 @@
     public string selectedWorkorderId { get; set; }
 
     public static List<Lot> LocalData = new List<Lot> {
-                new Lot() { Segment = "setment01" },
-                new Lot() { Segment = "setment02" },
-                new Lot() { Segment = "setment03" }
+            new Lot() { Segment = "setment01" },
+            new Lot() { Segment = "setment02" },
+            new Lot() { Segment = "setment03" }
 
-        };
+    };
 
 
     void Attach(RenderHandle renderHandle) { }
 
     async Task SetParametersAsync(ParameterView parameters) { }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        //Workorder 생산 시작일 필터
+
+    }
+
+    void filterDate_ValueChanged(ChangedEventArgs<DateTime?> args)
+    {
+
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -177,10 +193,6 @@
         //filter 초기값 입력
         if (firstRender)
         {
-            //Workorder 생산 시작일 필터
-            filterDate.sfDateRangePicker.StartDate = DateTime.Now.AddDays(-7);
-            filterDate.sfDateRangePicker.EndDate = DateTime.Now;
-
             await GetProductInfo();
             this.filterProduct.sfDropDownList.AddItem(Products);
 
@@ -196,7 +208,6 @@
             QueryType = "Filter",
             QueryVersion = "001",
             SiteId = "A_10",
-            //ParameterKeyValue = new Dictionary<string, object>() { { "from", "2020-11-01 06:00:00" }, { "to", "2020-11-02 06:00:00" } }
             ParameterKeyValue = new Dictionary<string, object>()
 
         };

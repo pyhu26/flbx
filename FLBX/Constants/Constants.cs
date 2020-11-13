@@ -28,4 +28,11 @@ namespace FLBX.Constants
         /// </summary>
         public const string V3 = "V3";
     }
+
+    public enum DialogType
+    {
+        Alert,
+        Confirm,
+        Prompt
+    }
 }

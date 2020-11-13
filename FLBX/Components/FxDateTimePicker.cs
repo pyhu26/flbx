@@ -29,6 +29,11 @@ namespace FLBX.Components
         [Parameter]
         public int LargeColSpanValue { get; set; }
 
+        [Parameter]
+        public DateTime StartDate { get; set; }
+        [Parameter]
+        public DateTime EndDate { get; set; }
+
         public string cssClass { get; set; }
 
         protected override void OnParametersSet()
@@ -52,8 +57,6 @@ namespace FLBX.Components
             }
 
             this.cssClass = css;
-
-            StateHasChanged();
         }
 
         public string AuthorityLevel { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
