@@ -1,0 +1,21 @@
+﻿@using Syncfusion.Blazor.Spinner
+
+<SfSpinner @ref="SpinnerObj" Type="@ThemeSpinner">
+</SfSpinner>
+
+
+@code {
+    public SfSpinner SpinnerObj;
+
+    private SpinnerType ThemeSpinner { get; set; } = SpinnerType.Material;
+
+    public async Task Show()
+    {
+        await SpinnerObj.Show();
+    }
+
+    public async Task Hide()
+    {
+        await SpinnerObj.Hide();
+    }
+}

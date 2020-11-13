@@ -2,23 +2,13 @@
 @using Syncfusion.Blazor.Calendars
 
 <div class="@cssClass">
-    <SfDateRangePicker @ref="sfDateRangePicker" Placeholder="Choose a Range">
+    <SfDateRangePicker @ref="sfDateRangePicker"
+                       Placeholder="Choose a Range"
+                       StartDate="@StartDate"
+                       EndDate="@EndDate">
         <DateRangePickerEvents OnClose="@Onclose"></DateRangePickerEvents>
+        <CalendarEvents TValue="DateTime?" ValueChange="ValuechangeHandler"></CalendarEvents>
     </SfDateRangePicker>
 </div>
 
-    @*<div class="control-section">
-        <div id="fx-daterange-picker-wrapper">
-            <SfDateRangePicker @ref="sfDateRangePicker" Placeholder="Choose a Range"></SfDateRangePicker>
-        </div>
-    </div>
-    <style>
-        #wrapper {
-            max-width: 300px;
-            margin: 0px auto;
-            padding-top: 20px;
-        }
-    </style>*@
-    @code {
 
-    }
