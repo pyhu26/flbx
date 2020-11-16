@@ -19,7 +19,7 @@
 
     <div class="row">
         <FxDateTimePicker @ref="filterFrom" DateTimeValue="@DateValueFrom" DateFormat="'From : 'yyyy-MM-dd hh:mm:ss"  MediumColSpanValue="3" Placeholder="생산시작일"></FxDateTimePicker>
-        <FxDateTimePicker @ref="filterTo" DateFormat="'To : 'yyyy-MM-dd hh:mm:ss"  MediumColSpanValue="3" Placeholder="생산종료일"></FxDateTimePicker>
+        <FxDateTimePicker @ref="filterTo" DateTimeValue="@DateValueTo" DateFormat="'To : 'yyyy-MM-dd hh:mm:ss"  MediumColSpanValue="3" Placeholder="생산종료일"></FxDateTimePicker>
         <FxTextBox @ref="filterLotId" MediumColSpanValue="3" Placeholder="Lot Id검색:"></FxTextBox>
         <FxTextBox @ref="filterLotName" MediumColSpanValue="3" Placeholder="Lot이름검색:"></FxTextBox>
         @*<SfTextBox Placeholder="Lot Id검색" FloatLabelType="@FloatLabelType.Never"  @bind-Value="@LotId"/>
@@ -31,6 +31,7 @@
             <FLBX.Components.FxFilterButtons>
                 <SfButton @ref="btnQuery" OnClick="@btnQuery_OnClickAsync" IsPrimary="true">조회</SfButton>
             </FLBX.Components.FxFilterButtons>
+            <FxToast @ref="@toast" ToastTitle="Information" ToastTimeOut="3000" ToastContent="@ToastMessage"></FxToast>
         </div>
     </div>
 
@@ -90,6 +91,7 @@
         FxDateTimePicker filterTo;
         FxTextBox filterLotId;
         FxTextBox filterLotName;
+        FxToast toast;
 
 
 
@@ -108,7 +110,7 @@
         public string LotId { get; set; } = "";
         [Parameter]
         public string LotName { get; set; } = "";
-
+        public string ToastMessage { get; set; }
         protected override void OnInitialized()
         {
             //GridData = WorkOrderDetails.GetAllRecords();
