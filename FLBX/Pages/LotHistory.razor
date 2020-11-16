@@ -18,7 +18,7 @@
 <FLBX.Components.FxFilterGroup>
 
     <div class="row">
-        <FxDateTimePicker @ref="filterFrom" DateFormat="'From : 'yyyy-MM-dd hh:mm:ss"  MediumColSpanValue="3" Placeholder="생산시작일"></FxDateTimePicker>
+        <FxDateTimePicker @ref="filterFrom" DateTimeValue="@DateValueFrom" DateFormat="'From : 'yyyy-MM-dd hh:mm:ss"  MediumColSpanValue="3" Placeholder="생산시작일"></FxDateTimePicker>
         <FxDateTimePicker @ref="filterTo" DateFormat="'To : 'yyyy-MM-dd hh:mm:ss"  MediumColSpanValue="3" Placeholder="생산종료일"></FxDateTimePicker>
         <FxTextBox @ref="filterLotId" MediumColSpanValue="3" Placeholder="Lot Id검색:"></FxTextBox>
         <FxTextBox @ref="filterLotName" MediumColSpanValue="3" Placeholder="Lot이름검색:"></FxTextBox>
@@ -79,13 +79,16 @@
 
         GridGroupSettings gridGroup;
 
-        //public DateTime? DateValueFrom { get; set; }
-        //public DateTime? DateValueTo { get; set; }
+        public DateTime? DateValueFrom { get; set; } = DateTime.Now.AddDays(-7);
+
+        public DateTime? DateValueTo { get; set; } = DateTime.Now;
 
         FxDateTimePicker filterFrom;
         FxDateTimePicker filterTo;
         FxTextBox filterLotId;
         FxTextBox filterLotName;
+
+
 
 
         void Attach(RenderHandle renderHandle) { }
@@ -118,8 +121,8 @@
             if (firstRender)
             {
 
-                this.filterFrom.sfDateTimePicker.Value= DateTime.Now.AddDays(-14);
-                this.filterTo.sfDateTimePicker.Value = DateTime.Now;
+                //this.filterFrom.sfDateTimePicker.Value= DateTime.Now.AddDays(-14);
+                //this.filterTo.sfDateTimePicker.Value = DateTime.Now;
 
                 StateHasChanged();
             }
