@@ -19,7 +19,7 @@
 
     <div class="row">
         <FxDateTimePicker @ref="filterFrom" DateTimeValue="@DateValueFrom" DateFormat="'From : 'yyyy-MM-dd hh:mm:ss"  MediumColSpanValue="3" Placeholder="생산시작일"></FxDateTimePicker>
-        <FxDateTimePicker @ref="filterTo" DateFormat="'To : 'yyyy-MM-dd hh:mm:ss"  MediumColSpanValue="3" Placeholder="생산종료일"></FxDateTimePicker>
+        <FxDateTimePicker @ref="filterTo" DateTimeValue="@DateValueTo" DateFormat="'To : 'yyyy-MM-dd hh:mm:ss"  MediumColSpanValue="3" Placeholder="생산종료일"></FxDateTimePicker>
         <FxTextBox @ref="filterLotId" MediumColSpanValue="3" Placeholder="Lot Id검색:"></FxTextBox>
         <FxTextBox @ref="filterLotName" MediumColSpanValue="3" Placeholder="Lot이름검색:"></FxTextBox>
         @*<SfTextBox Placeholder="Lot Id검색" FloatLabelType="@FloatLabelType.Never"  @bind-Value="@LotId"/>
@@ -31,6 +31,7 @@
             <FLBX.Components.FxFilterButtons>
                 <SfButton @ref="btnQuery" OnClick="@btnQuery_OnClickAsync" IsPrimary="true">조회</SfButton>
             </FLBX.Components.FxFilterButtons>
+            <FxToast @ref="@toast" ToastTitle="Information" ToastTimeOut="3000" ToastContent="@ToastMessage"></FxToast>
         </div>
     </div>
 
@@ -60,11 +61,14 @@
                     <ChildContent2>
                         <SfGrid DataSource="@LotHist"  AllowPaging="true" AllowTextWrap="true" AllowResizing="true" AllowReordering="true" AllowFiltering="true">
                             <GridColumns>
-                                <GridColumn Field="LOTID" IsPrimaryKey="true" HeaderText="LotId" Width="100"></GridColumn>
-                                <GridColumn Field="LOTNAME" HeaderText="이름" TextAlign="TextAlign.Right" Width="50"></GridColumn>
-                                <GridColumn Field="QTY" HeaderText="수량" Width="50"></GridColumn>
-                                <GridColumn Field="PROCESSSEGMENTID" HeaderText="공정" Width="80"></GridColumn>
-                                <GridColumn Field="EQUIPMENTID" HeaderText="설비" Width="80"></GridColumn>
+                                <GridColumn Field="LOTID" IsPrimaryKey="true" HeaderText="Lot Id" Width="100"></GridColumn>
+                                <GridColumn Field="LOTNAME" HeaderText="Lot Name" TextAlign="TextAlign.Right" Width="50"></GridColumn>
+                                <GridColumn Field="STATE" HeaderText="State" Width="50"></GridColumn>
+                                <GridColumn Field="QTY" HeaderText="Qty" Width="50"></GridColumn>
+                                <GridColumn Field="PROCESSSEGMENTID" HeaderText="Segment" Width="80"></GridColumn>
+                                <GridColumn Field="MODIFYTIME" HeaderText="Modify Time" Width="80"></GridColumn>
+                                <GridColumn Field="EQUIPMENTID" HeaderText="Equitment Id" Width="80"></GridColumn>
+                                <GridColumn Field="EQUIPMENTName" HeaderText="Equitment Name" Width="80"></GridColumn>
                             </GridColumns>
                         </SfGrid>
                     </ChildContent2>                                             
@@ -87,6 +91,7 @@
         FxDateTimePicker filterTo;
         FxTextBox filterLotId;
         FxTextBox filterLotName;
+        FxToast toast;
 
 
 
@@ -105,7 +110,7 @@
         public string LotId { get; set; } = "";
         [Parameter]
         public string LotName { get; set; } = "";
-
+        public string ToastMessage { get; set; }
         protected override void OnInitialized()
         {
             //GridData = WorkOrderDetails.GetAllRecords();
@@ -175,7 +180,7 @@
                 QueryType = "Inquiry",
                 QueryVersion = "001",
                 SiteId = "A_10",
-                ParameterKeyValue = new Dictionary<string, object>() { { "workorder", args.Data.WORKORDERID } }
+                ParameterKeyValue = new Dictionary<string, object>() { { "lotid", args.Data.LOTID } }
             };
 
             FLMessageSet messageSet = messageService.CreateMessageSet(MeesageType.Query, queryMeasage, null, null);
@@ -200,9 +205,12 @@
         {
             public string LOTID { get; set; }
             public string LOTNAME { get; set; }
+            public string STATE { get; set; }
             public float? QTY { get; set; }
             public string PROCESSSEGMENTID { get; set; }
+            public DateTime MODIFYTIME { get; set; }
             public string EQUIPMENTID { get; set; }
+            public string EQUIPMENTNAME { get; set; }
 
         }
 

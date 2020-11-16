@@ -1,0 +1,250 @@
+﻿@implements Microsoft.AspNetCore.Components.IComponent
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.TreeGrid
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Calendars
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Cards
+@using Syncfusion.Blazor.Layouts
+@using FLBX.Components
+@using FLBX.Models
+@using System.Text.Json
+@inject FxUtil fxUtil
+@inject MessageService messageService
+@*@inherits M0001*@
+@*TOP Menu  *@
+
+
+<FLBX.Components.FxFilterGroup>
+
+    <div class="row">
+        <FxDropDown @ref="filterState" DataSourceValue="@State"  MediumColSpanValue="3" Placeholder="State"></FxDropDown>
+        <FxTextBox @ref="filterEquitmentId" MediumColSpanValue="3" Placeholder="Equitment Id검색:"></FxTextBox>
+        <FxTextBox @ref="filterEquitmentName" MediumColSpanValue="3" Placeholder="Equitment Name검색:"></FxTextBox>
+        @*<SfTextBox Placeholder="Lot Id검색" FloatLabelType="@FloatLabelType.Never"  @bind-Value="@LotId"/>
+            <SfTextBox Placeholder="Lot 이름검색" FloatLabelType="@FloatLabelType.Never" @bind-Value="@LotName"/>*@
+    </div>
+
+    <div class="row d-flex justify-content-end">
+        <div class="p-2">
+            <FLBX.Components.FxFilterButtons>
+                <SfButton @ref="btnQuery" OnClick="@btnQuery_OnClickAsync" IsPrimary="true">조회</SfButton>
+            </FLBX.Components.FxFilterButtons>
+            <FxToast @ref="@toast" ToastTitle="Information" ToastTimeOut="3000" ToastContent="@ToastMessage"></FxToast>
+        </div>
+    </div>
+
+</FLBX.Components.FxFilterGroup>
+@*TOP Menu -End- *@
+
+
+@*Main  Content *@
+<div class="row">
+    <div class="col-lg-12 px-0">
+        <div class="control_wrapper shadow mb-4" style="height: 615px;">
+
+            <FxSplitContainer ContentsWidth="@(new string[]{"40%","60%"})" SplitType="@FLBX.Constants.SplitContainerType.H2" Title1="Equitment List" Title2="Equitment History" cssClass="out-splitter py-3" width="100%" height="100%">
+                <ChildContent1>
+                    @*<SfGrid DataSource="@EquitmentList" AllowGrouping="true" AllowPaging="true" AllowTextWrap="true" AllowResizing="true" AllowReordering="true" AllowFiltering="true" AllowSelection="true">
+                            <GridEvents RowSelected="RowSelectHander" TValue="TempEquitmentModel"></GridEvents>
+                            <GridColumns>
+                                <GridColumn Field="EQUIPMENTID" IsPrimaryKey="true" HeaderText="Equitment ID" TextAlign="TextAlign.Left" Width="100"></GridColumn>
+                                <GridColumn Field="EQUIPMENTNAME" IsPrimaryKey="true" HeaderText="Equitment Name" Width="100"></GridColumn>
+                                <GridColumn Field="STATE" HeaderText="State" Width="80"></GridColumn>
+
+                            </GridColumns>
+                        </SfGrid>*@
+
+                    <SfTreeGrid DataSource="@EquitmentList" Height="315" IdMapping="EQUIPMENTID" ParentIdMapping="PARENTID" TreeColumnIndex="1" AllowPaging="true">
+                        <TreeGridPageSettings PageSize="2"></TreeGridPageSettings>
+                        <TreeGridEvents TValue="TempEquitmentModel"  RowSelected="RowSelectedHandler" ></TreeGridEvents>
+                        
+                        <TreeGridColumns>
+                            <TreeGridColumn Field="EQUIPMENTID" HeaderText=" Equitment ID" Width="80" TextAlign="TextAlign.Left"></TreeGridColumn>
+                            <TreeGridColumn Field="EQUIPMENTNAME" HeaderText="Equitment Name" Width="145"></TreeGridColumn>
+                            <TreeGridColumn Field="STATE" HeaderText="State" Width="88" TextAlign="TextAlign.Center"></TreeGridColumn>
+                            <TreeGridColumn Field="PARENTID" HeaderText=" Parent Id" Width="88" TextAlign="TextAlign.Center"></TreeGridColumn>
+                        </TreeGridColumns>
+                    </SfTreeGrid>
+
+                </ChildContent1>
+
+                <ChildContent2>
+                    <SfGrid DataSource="@EquitmentHist" AllowPaging="true" AllowTextWrap="true" AllowResizing="true" AllowReordering="true" AllowFiltering="true">
+                        <GridColumns>
+                            <GridColumn Field="EQUIPMENTID" HeaderText="Equitment Id" Width="80"></GridColumn>
+                            <GridColumn Field="EQUIPMENTName" HeaderText="Equitment Name" Width="80"></GridColumn>
+                            <GridColumn Field="STATE" HeaderText="State" Width="50"></GridColumn>
+                            <GridColumn Field="ACTIVITY" HeaderText="Qty" Width="50"></GridColumn>
+                            <GridColumn Field="CUSTOMACTIVITY" HeaderText="Segment" Width="80"></GridColumn>
+                            <GridColumn Field="TID" HeaderText="Modify Time" Width="80"></GridColumn>
+
+                        </GridColumns>
+                    </SfGrid>
+                </ChildContent2>
+            </FxSplitContainer>
+        </div>
+    </div>
+</div>
+
+@*Main  Content End *@
+
+@code {
+
+    GridGroupSettings gridGroup;
+
+    FxDropDown filterState;
+
+    FxTextBox filterEquitmentId;
+    FxTextBox filterEquitmentName;
+    FxToast toast;
+
+    IEnumerable<DropDownModel> State { get; set; }
+
+    void Attach(RenderHandle renderHandle) { }
+
+    List<TempEquitmentModel> EquitmentList { get; set; } = new List<TempEquitmentModel>();
+    List<TempEquitmentHistModel> EquitmentHist { get; set; } = new List<TempEquitmentHistModel>();
+    public SfButton btnQuery;
+
+    public int Index { get; set; } = 1;
+    [Parameter]
+    public string LotId { get; set; } = "";
+    [Parameter]
+    public string LotName { get; set; } = "";
+    public string ToastMessage { get; set; }
+
+    protected override void OnInitialized()
+    {
+        //GridData = WorkOrderDetails.GetAllRecords();
+        //GridDataLot = Lot.GetAllRecords();
+
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        base.OnAfterRenderAsync(firstRender);
+
+        //filter 초기값 입력
+        if (firstRender)
+        {
+            Index = 0;
+            //this.filterFrom.sfDateTimePicker.Value= DateTime.Now.AddDays(-14);
+            //this.filterTo.sfDateTimePicker.Value = DateTime.Now;
+            await GetEquipmentState();
+            this.filterState.sfDropDownList.AddItem(State);
+
+        }
+    }
+    private async Task GetEquipmentState()
+    {
+        //Query Message 생성
+        QueryMessage queryMessage = new QueryMessage()
+        {
+            QueryId = "GetEquipmentState",
+            QueryType = "Filter",
+            QueryVersion = "001",
+            SiteId = "A_10",
+            ParameterKeyValue = new Dictionary<string, object>()
+
+        };
+
+        FLMessageSet messageSet = messageService.CreateMessageSet(MeesageType.Query, queryMessage, null, null);
+
+        //Message Send
+        var task1 = messageService.SendMessageAsync("Product", "/query/executequery", messageSet);
+        await Task.WhenAll(task1);
+        ReplyMessage reply = task1.Result;
+
+        //Reply Message Binding
+        State = JsonSerializer.Deserialize<IEnumerable<DropDownModel>>(Convert.ToString(reply.ResultKeyValues["reply"]));
+
+
+
+    }
+
+
+    public async Task btnQuery_OnClickAsync()
+    {
+        //Parmeter 생성
+        Dictionary<string, object> param = new Dictionary<string, object>();
+        //param.Add("from", filterFrom.sfDateTimePicker.Value?.ToString("yyyy-MM-dd hh:mm:ss"));
+        //param.Add("to", filterTo.sfDateTimePicker.Value?.ToString("yyyy-MM-dd hh:mm:ss"));
+        var state = filterState.sfDropDownList.Value;
+        if (String.IsNullOrEmpty(state))
+            state = " ";
+        param.Add("state",  state);
+        var equitmentid = filterEquitmentId.fxTextBox.Value;
+        var equitmentname = filterEquitmentName.fxTextBox.Value;
+        if (String.IsNullOrEmpty(equitmentid))
+            equitmentid = " ";
+        param.Add("equitmentid", equitmentid);
+        if (String.IsNullOrEmpty(equitmentname))
+            equitmentname = " ";
+        param.Add("equitmentname", equitmentname);
+        //Query Message 생성
+        QueryMessage queryMeasage = new QueryMessage()
+        {
+            QueryId = "GetEquipmentList",
+            QueryType = "Inquiry",
+            QueryVersion = "001",
+            SiteId = "A_10",
+            ParameterKeyValue = param
+        };
+
+        FLMessageSet messageSet = messageService.CreateMessageSet(MeesageType.Query, queryMeasage, null, null);
+
+        //Message Send
+        var task = messageService.SendMessageAsync("Product", "/query/executequery", messageSet);
+        await Task.WhenAll(task);
+        ReplyMessage reply = task.Result;
+
+        //Reply Message Binding
+        this.EquitmentList = JsonSerializer.Deserialize<List<TempEquitmentModel>>(Convert.ToString(reply.ResultKeyValues["reply"]));
+    }
+
+    private async Task RowSelectedHandler(RowSelectEventArgs<TempEquitmentModel> args)
+    {
+        //Todo lothisttory query
+        //Query Message 생성
+        QueryMessage queryMeasage = new QueryMessage()
+        {
+            QueryId = "GetEquitmentHist",
+            QueryType = "Inquiry",
+            QueryVersion = "001",
+            SiteId = "A_10",
+            ParameterKeyValue = new Dictionary<string, object>() { { "equitmentid", args.Data.EQUIPMENTID } }
+        };
+
+        FLMessageSet messageSet = messageService.CreateMessageSet(MeesageType.Query, queryMeasage, null, null);
+
+        //Message Send
+        var task = messageService.SendMessageAsync("Product", "/query/executequery", messageSet);
+        await Task.WhenAll(task);
+        ReplyMessage reply = task.Result;
+
+        //Reply Message Binding
+        this.EquitmentHist = JsonSerializer.Deserialize<List<TempEquitmentHistModel>>(Convert.ToString(reply.ResultKeyValues["reply"]));
+    }
+    class TempEquitmentModel
+    {
+        public string EQUIPMENTID { get; set; }
+        public string EQUIPMENTNAME { get; set; }
+        public string STATE { get; set; }
+        public string PARENTID { get; set; }
+
+
+    }
+    class TempEquitmentHistModel
+    {
+        public string EQUIPMENTID { get; set; }
+        public string EQUIPMENTNAME { get; set; }
+        public string STATE { get; set; }
+        public string ACTIVITY { get; set; }
+        public string CUSTOMACTIVITY { get; set; }
+        public string TID { get; set; }
+
+    }
+
+}
