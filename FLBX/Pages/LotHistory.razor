@@ -60,11 +60,14 @@
                     <ChildContent2>
                         <SfGrid DataSource="@LotHist"  AllowPaging="true" AllowTextWrap="true" AllowResizing="true" AllowReordering="true" AllowFiltering="true">
                             <GridColumns>
-                                <GridColumn Field="LOTID" IsPrimaryKey="true" HeaderText="LotId" Width="100"></GridColumn>
-                                <GridColumn Field="LOTNAME" HeaderText="이름" TextAlign="TextAlign.Right" Width="50"></GridColumn>
-                                <GridColumn Field="QTY" HeaderText="수량" Width="50"></GridColumn>
-                                <GridColumn Field="PROCESSSEGMENTID" HeaderText="공정" Width="80"></GridColumn>
-                                <GridColumn Field="EQUIPMENTID" HeaderText="설비" Width="80"></GridColumn>
+                                <GridColumn Field="LOTID" IsPrimaryKey="true" HeaderText="Lot Id" Width="100"></GridColumn>
+                                <GridColumn Field="LOTNAME" HeaderText="Lot Name" TextAlign="TextAlign.Right" Width="50"></GridColumn>
+                                <GridColumn Field="STATE" HeaderText="State" Width="50"></GridColumn>
+                                <GridColumn Field="QTY" HeaderText="Qty" Width="50"></GridColumn>
+                                <GridColumn Field="PROCESSSEGMENTID" HeaderText="Segment" Width="80"></GridColumn>
+                                <GridColumn Field="MODIFYTIME" HeaderText="Modify Time" Width="80"></GridColumn>
+                                <GridColumn Field="EQUIPMENTID" HeaderText="Equitment Id" Width="80"></GridColumn>
+                                <GridColumn Field="EQUIPMENTName" HeaderText="Equitment Name" Width="80"></GridColumn>
                             </GridColumns>
                         </SfGrid>
                     </ChildContent2>                                             
@@ -172,7 +175,7 @@
                 QueryType = "Inquiry",
                 QueryVersion = "001",
                 SiteId = "A_10",
-                ParameterKeyValue = new Dictionary<string, object>() { { "workorder", args.Data.WORKORDERID } }
+                ParameterKeyValue = new Dictionary<string, object>() { { "lotid", args.Data.LOTID } }
             };
 
             FLMessageSet messageSet = messageService.CreateMessageSet(MeesageType.Query, queryMeasage, null, null);
@@ -197,9 +200,12 @@
         {
             public string LOTID { get; set; }
             public string LOTNAME { get; set; }
+            public string STATE { get; set; }
             public float? QTY { get; set; }
             public string PROCESSSEGMENTID { get; set; }
+            public DateTime MODIFYTIME { get; set; }
             public string EQUIPMENTID { get; set; }
+            public string EQUIPMENTNAME { get; set; }
 
         }
 
