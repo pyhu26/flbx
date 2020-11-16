@@ -34,6 +34,9 @@ namespace FLBX.Components
         [Parameter]
         public DateTime EndDate { get; set; }
 
+        [Parameter]
+        public string InnerCssClass { get; set; } = "";
+
         public string cssClass { get; set; }
 
         protected override void OnParametersSet()

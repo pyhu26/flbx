@@ -29,16 +29,19 @@ namespace FLBX.Components
         public DateTime EndDate { get; set; }
 
         [Parameter]
-        public EventCallback OnValueChanged { get; set; }
+        public bool IsMandantory { get; set; }
+
+        [Parameter]
+        public string InnerCssClass { get; set; } = "";
 
         public string cssClass { get; set; }
 
         [Parameter]
-        public EventCallback Onclose { get; set; }
+        public EventCallback<RangeEventArgs> DateTimeChanged{ get; set; }
 
-        public void ValuechangeHandler(ChangedEventArgs<DateTime?> args)
+        public async Task ValuechangeHandler(RangeEventArgs args)
         {
-            OnValueChanged.InvokeAsync(args);
+            await DateTimeChanged.InvokeAsync(args);
         }
 
         protected override void OnParametersSet()
@@ -63,7 +66,10 @@ namespace FLBX.Components
 
             this.cssClass = css;
 
-            StateHasChanged();
+            if (IsMandantory)
+            {
+                InnerCssClass += " e-success";
+            }
         }
 
         public string AuthorityLevel { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
