@@ -5,9 +5,11 @@
     <SfDateRangePicker @ref="sfDateRangePicker"
                        Placeholder="Choose a Range"
                        StartDate="@StartDate"
-                       EndDate="@EndDate">
-        <DateRangePickerEvents OnClose="@Onclose"></DateRangePickerEvents>
-        <CalendarEvents TValue="DateTime?" ValueChange="ValuechangeHandler"></CalendarEvents>
+                       EndDate="@EndDate"
+                       CssClass=@InnerCssClass
+                       >
+        <DateRangePickerEvents ValueChange="ValuechangeHandler" ></DateRangePickerEvents>
+        @*<CalendarEvents TValue="DateTime?" ValueChange="ValuechangeHandler"></CalendarEvents>*@
     </SfDateRangePicker>
 </div>
 
