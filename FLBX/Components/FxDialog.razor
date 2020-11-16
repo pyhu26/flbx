@@ -1,0 +1,179 @@
+﻿@using Syncfusion.Blazor.Popups
+@using FLBX.Constants
+
+<SfDialog @bind-Visible="@AlertVisibility" Target="#FxDialog-target" Width="250px">
+    <DialogTemplates>
+        <Header>
+            @Title
+        </Header>
+        <Content>
+            @Message
+        </Content>
+    </DialogTemplates>
+    <DialogEvents OnOpen="@BeforeDialogOpen" Closed="@DialogClose"></DialogEvents>
+    <DialogButtons>
+        <DialogButton Content="Dismiss" IsPrimary="true" OnClick="@HideDialog" />
+    </DialogButtons>
+</SfDialog>
+<SfDialog @bind-Visible="@ConfirmDlgVisible" Width="400px" Target="#FxDialog-target" ShowCloseIcon="true">
+    <DialogTemplates>
+        <Header>
+            @Title
+        </Header>
+        <Content>
+            @Message
+        </Content>
+    </DialogTemplates>
+    <DialogEvents OnOpen="@BeforeDialogOpen" Closed="@DialogClose"></DialogEvents>
+    <DialogButtons>
+        <DialogButton Content="Yes" IsPrimary="true" OnClick="@HideDialog" />
+        <DialogButton Content="No" OnClick="@HideDialog" />
+    </DialogButtons>
+</SfDialog>
+<SfDialog ID="prompt_dialog" @bind-Visible="@PromptDlgVisible" Target="#FxDialog-target" Width="330px">
+    <DialogTemplates>
+        <Header>
+            Join Wi-Fi network
+        </Header>
+        <Content>
+            <table class="FxDialog-Table">
+                <tbody>
+                    <tr>
+                        <td>SSID:</td>
+                    </tr>
+                    <tr>
+                        <td><b>AndroidAP</b></td>
+                    </tr>
+                    <tr>
+                        <td>Password:</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span class="e-input-group">
+                                <input type="password" id="password" name="Required" class="e-input">
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </Content>
+    </DialogTemplates>
+    <DialogEvents OnOpen="@BeforeDialogOpen" Closed="@DialogClose"></DialogEvents>
+    <DialogButtons>
+        <DialogButton Content="Connect" IsPrimary="true" OnClick="@HideDialog" />
+        <DialogButton Content="Cancel" OnClick="@HideDialog" />
+    </DialogButtons>
+</SfDialog>
+<style>
+    .FxDialog-e-btn-hide {
+        display: none;
+    }
+
+    .FxDialog-Table {
+        border-collapse: separate;
+        border-spacing: 10px;
+        width: 85%;
+        margin: 0px -5px 0px;
+    }
+
+    .FxDialog-dlgbtn {
+        margin-right: 10px;
+    }
+
+    #FxDialog-target {
+        height: 460px;
+        min-height: 350px;
+    }
+
+    .FxDialog-dlgbtn {
+        margin-right: 10px;
+    }
+
+    .fabric #FxDialog-target #prompt_dialog.e-dialog {
+        height: 291px;
+    }
+
+    .material #FxDialog-target #prompt_dialog.e-dialog {
+        height: 270px;
+    }
+
+    #FxDialog-target #prompt_dialog.e-dialog {
+        height: 270px;
+    }
+
+    .bootstrap4 #FxDialog-target #prompt_dialog.e-dialog {
+        height: 285px;
+    }
+</style>
+
+@code {
+
+    [Parameter]
+    public DialogType PopupType { get; set; }
+
+    string Title { get; set; }
+    string Message { get; set; }
+
+    private bool ShowButtons { get; set; } = true;
+    private bool AlertVisibility { get; set; } = false;
+    private bool ConfirmDlgVisible { get; set; } = false;
+    private bool PromptDlgVisible { get; set; } = false;
+
+    private void ShowAlert()
+    {
+        this.AlertVisibility = true;
+    }
+    private void ShowConfirm()
+    {
+        this.ConfirmDlgVisible = true;
+    }
+    private void ShowPrompt()
+    {
+        this.PromptDlgVisible = true;
+    }
+    private void HideDialog(Object e)
+    {
+        this.AlertVisibility = false;
+        this.ConfirmDlgVisible = false;
+        this.PromptDlgVisible = false;
+    }
+    private void BeforeDialogOpen(BeforeOpenEventArgs args)
+    {
+        this.ShowButtons = false;
+    }
+    private void DialogClose(CloseEventArgs args)
+    {
+        this.ShowButtons = true;
+    }
+    public void Show(string title, string message)
+    {
+        switch (PopupType)
+        {
+            case DialogType.Alert:
+
+                this.Title = title;
+                this.Message = message;
+                ShowAlert();
+
+                break;
+            case DialogType.Confirm:
+
+                this.Title = title;
+                this.Message = message;
+                ShowConfirm();
+                break;
+            case DialogType.Prompt:
+
+                this.Title = title;
+                this.Message = message;
+                ShowPrompt();
+                break;
+            default:
+
+                this.Title = title;
+                this.Message = message;
+                ShowAlert();
+                break;
+        }
+    }
+}

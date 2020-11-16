@@ -23,10 +23,23 @@ namespace FLBX.Components
         [Parameter]
         public int LargeColSpanValue { get; set; }
 
+        [Parameter]
+        public DateTime StartDate { get; set; }
+        [Parameter]
+        public DateTime EndDate { get; set; }
+
+        [Parameter]
+        public EventCallback OnValueChanged { get; set; }
+
         public string cssClass { get; set; }
 
         [Parameter]
         public EventCallback Onclose { get; set; }
+
+        public void ValuechangeHandler(ChangedEventArgs<DateTime?> args)
+        {
+            OnValueChanged.InvokeAsync(args);
+        }
 
         protected override void OnParametersSet()
         {

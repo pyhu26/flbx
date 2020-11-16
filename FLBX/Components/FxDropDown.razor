@@ -2,15 +2,54 @@
 @using FLBX.Models
 
 <div class="@cssClass">
-    @*<SfDropDownList @ref="fxDropDownList" TValue="string" TItem="DropDownModel" DataSource="@DropDownValue" PopupHeight=@PopupHeight Placeholder=@Placeholder>
-        <DropDownListFieldSettings Text="Name" Value="Id"></DropDownListFieldSettings>
-    </SfDropDownList>*@
+    <SfDropDownList @ref="sfDropDownList"
+                    TValue="string"
+                    TItem="DropDownModel"
+                    DataSource="@DataSourceValue"
+                    PopupHeight=@PopupHeight
+                    Placeholder=@Placeholder
+                    AllowFiltering="true"  
+                    CssClass=@InnerCssClass
+                    PopupWidth=@PopupWidth>
 
-    <SfDropDownList @ref="sfDropDownList" TValue="string" TItem="DropDownModel" DataSource="@DataSourceValue" PopupHeight=@PopupHeight Placeholder=@Placeholder>
-        <DropDownListFieldSettings Text="Name" Value="Id"></DropDownListFieldSettings>
+        <DropDownListTemplates TItem="DropDownModel">
+            <ItemTemplate>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td class="e-text-center fxdropdown-combo-width">@((context as DropDownModel).Id)</td>
+                            <td>@((context as DropDownModel).Name)</td>
+                            <td>@((context as DropDownModel).Description)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </ItemTemplate>
+            <HeaderTemplate>
+                <table>
+                    <tr>
+                        <th class="e-text-center fxdropdown-combo-width">Id</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                    </tr>
+                </table>
+            </HeaderTemplate>
+            @*<ValueTemplate>
+                
+                    <div class="p-0" style="width:200px"> @((context as DropDownModel).Name) </div>
+                
+            </ValueTemplate>*@
+        </DropDownListTemplates>
+        <DropDownListFieldSettings Text="Id" Value="Name"></DropDownListFieldSettings>
+        
+
     </SfDropDownList>
 </div>
+<style>
 
+    .fxdropdown-combo-width {
+        width: 125px;
+    }
+</style>
 @code {
 
 }

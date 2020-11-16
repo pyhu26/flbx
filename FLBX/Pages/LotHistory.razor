@@ -77,20 +77,20 @@
 
     @code {
 
-            GridGroupSettings gridGroup;
+        GridGroupSettings gridGroup;
 
-            //public DateTime? DateValueFrom { get; set; }
-            //public DateTime? DateValueTo { get; set; }
+        //public DateTime? DateValueFrom { get; set; }
+        //public DateTime? DateValueTo { get; set; }
 
-            FxDateTimePicker filterFrom;
-            FxDateTimePicker filterTo;
-            FxTextBox filterLotId;
-            FxTextBox filterLotName;
+        FxDateTimePicker filterFrom;
+        FxDateTimePicker filterTo;
+        FxTextBox filterLotId;
+        FxTextBox filterLotName;
 
 
-            void Attach(RenderHandle renderHandle) { }
-            List<TempLotModel> LotList { get; set; } = new List<TempLotModel>();
-            List<TempLotHistModel> LotHist { get; set; } = new List<TempLotHistModel>();
+        void Attach(RenderHandle renderHandle) { }
+        List<TempLotModel> LotList { get; set; } = new List<TempLotModel>();
+        List<TempLotHistModel> LotHist { get; set; } = new List<TempLotHistModel>();
         public SfButton btnQuery;
 
         public string[] GroupedColumns = new string[] { "WORKORDERID" };
@@ -117,26 +117,30 @@
             //filter 초기값 입력
             if (firstRender)
             {
-                //Workorder 생산 시작일 필터
-                //DateValueFrom = DateTime.Now.AddDays(-14);
-                //DateValueTo = DateTime.Now;
-                filterFrom.sfDateTimePicker.Value= DateTime.Now.AddDays(-14);
-                filterTo.sfDateTimePicker.Value = DateTime.Now;
+
+                this.filterFrom.sfDateTimePicker.Value= DateTime.Now.AddDays(-14);
+                this.filterTo.sfDateTimePicker.Value = DateTime.Now;
 
                 StateHasChanged();
             }
         }
+
+
+
         public async Task btnQuery_OnClickAsync()
         {
             //Parmeter 생성
             Dictionary<string, object> param = new Dictionary<string, object>();
             param.Add("from", filterFrom.sfDateTimePicker.Value?.ToString("yyyy-MM-dd hh:mm:ss"));
             param.Add("to", filterTo.sfDateTimePicker.Value?.ToString("yyyy-MM-dd hh:mm:ss"));
-
-          //  if (String.IsNullOrEmpty(filterLotId.fxTextBox.Value)
-            param.Add("lotid", filterLotId.fxTextBox.Value);
-       
-            param.Add("lotname", filterLotName.fxTextBox.Value);
+            var lotid = filterLotId.fxTextBox.Value;
+            var lotname = filterLotName.fxTextBox.Value;
+            if (String.IsNullOrEmpty(lotid))
+                lotid = " ";
+            param.Add("lotid", lotid);
+            if (String.IsNullOrEmpty(lotname))
+                lotname = " ";
+            param.Add("lotname", lotname);
             //Query Message 생성
             QueryMessage queryMeasage = new QueryMessage()
             {
