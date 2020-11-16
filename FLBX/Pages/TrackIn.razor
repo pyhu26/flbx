@@ -22,7 +22,7 @@
 
     <div class="row">
 
-        <FxDateRangePicker @ref="@filterDate" MediumColSpanValue="3" Placeholder="생산시작일(기간)" Onclose="@OncloseDate"></FxDateRangePicker>
+        <FxDateRangePicker @ref="@filterDate" MediumColSpanValue="3" Placeholder="생산시작일(기간)" Onclose="@OncloseDate" OnValueChanged="@OnValueChange"></FxDateRangePicker>
         <FxDropDown @ref="@filterWorkOrder" DataSourceValue="@Workorders" MediumColSpanValue="3" Placeholder="Work Order"></FxDropDown>
         <FxTextBox @ref="@filterLotId" MediumColSpanValue="3" Placeholder="Lot Id 검색 "> </FxTextBox>
         <FxTextBox @ref="@filterLotName" MediumColSpanValue="3" Placeholder="Lot 이름 검색 "> </FxTextBox>
@@ -32,6 +32,7 @@
             <FLBX.Components.FxFilterButtons>
                 <SfButton IsPrimary="true" OnClick="@GetLotInfo">조회</SfButton>
                 <SfButton CssClass="e-danger" OnClick="@Trackin">작업시작</SfButton>
+                <SfButton CssClass="e-danger" OnClick="@Trackout">작업종료</SfButton>
             </FLBX.Components.FxFilterButtons>
 
             <FxToast @ref="@toast" ToastTitle="Information" ToastTimeOut="3000" ToastContent="@ToastMessage"></FxToast>
@@ -44,33 +45,27 @@
 @*Main  Content *@
 <div class="row">
     <div class="col-lg-12 px-0">
-        <div class="control_wrapper shadow mb-4">
-
+        <div class="card shadow mb-4 p-3" style="height: 615px;">
             <div class="font-weight-bold text-info mb-1"><i class="fas fa fa-bars pr-1"></i>생산Lot</div>
-            <SfGrid @ref="LotGrid" DataSource="@GridDataLot" Toolbar="@(new List<string>() { "Edit", "Update", "Cancel" })" AllowPaging="true">
+            <SfGrid ID="LotGrid" @ref="LotGrid" DataSource="@GridDataLot" Toolbar="@(new List<string>() { "Edit", "Update", "Cancel","Search","Print","ExcelExport" })" AllowPaging="true" AllowExcelExport="true">
                 <GridSelectionSettings CheckboxOnly="true" PersistSelection="true"></GridSelectionSettings>
-                <GridEditSettings AllowEditing="true"></GridEditSettings>
+                <GridEditSettings ShowDeleteConfirmDialog="true" AllowEditing="true" AllowNextRowEdit="true" AllowEditOnDblClick="false" Mode="EditMode.Normal"></GridEditSettings>
                 <GridColumns>
-                    <GridColumn Type="ColumnType.CheckBox" Width="50"></GridColumn>
-                    <GridColumn Field=@nameof(LotModel.LOTID ) HeaderText="LOTID" Width="100"></GridColumn>
-                    <GridColumn Field=@nameof(LotModel.LOTNAME ) HeaderText="LOTNAME" Width="100"></GridColumn>
-                    <GridColumn Field=@nameof(LotModel.STATE ) HeaderText="STATE" Width="100"></GridColumn>
-                    <GridColumn Field=@nameof(LotModel.PREVSTATE ) HeaderText="PREVSTATE" Width="100"></GridColumn>
-                    <GridColumn Field=@nameof(LotModel.QTY ) HeaderText="QTY" TextAlign="TextAlign.Right" Width="30"></GridColumn>
-                    <GridColumn Field=@nameof(LotModel.WORKORDERID ) HeaderText="WORKORDERID" Width="100"></GridColumn>
-                    <GridColumn Field=@nameof(LotModel.SITEID ) HeaderText="SITEID" Width="100"></GridColumn>
-                    <GridColumn Field=@nameof(LotModel.PRODUCTORDERID ) HeaderText="PRODUCTORDERID" Width="100"></GridColumn>
-                    <GridColumn Field=@nameof(LotModel.PRODUCTDEFINITIONID ) HeaderText="PRODUCTDEFINITIONID" Width="100"></GridColumn>
-                    <GridColumn Field=@nameof(LotModel.PROCESSDEFINITIONID ) HeaderText="PROCESSDEFINITIONID" Width="100"></GridColumn>
-                    <GridColumn Field=@nameof(LotModel.SUBPROCESSDEFINITIONID ) HeaderText="SUBPROCESSDEFINITIONID" Width="100"></GridColumn>
-                    <GridColumn Field=@nameof(LotModel.PROCESSNODEID ) HeaderText="PROCESSNODEID" Width="100"></GridColumn>
-                    <GridColumn Field=@nameof(LotModel.PROCESSSEGMENTID ) HeaderText="PROCESSSEGMENTID" Width="100"></GridColumn>
-                    <GridColumn Field=@nameof(LotModel.PROCESSSEGMENTRULEID ) HeaderText="PROCESSSEGMENTRULEID" Width="100"></GridColumn>
-                    <GridColumn Field=@nameof(LotModel.PROCESSINGSTATE ) HeaderText="PROCESSINGSTATE" Width="100"></GridColumn>
-                    <GridColumn Field=@nameof(LotModel.ISHOLD ) HeaderText="ISHOLD" Width="100"></GridColumn>
-                    <GridColumn Field=@nameof(LotModel.ISREWORK ) HeaderText="ISREWORK" Width="100"></GridColumn>
-                    <GridColumn Field=@nameof(LotModel.ISRESERVEDFUTUREACTION ) HeaderText="ISRESERVEDFUTUREACTION" Width="100"></GridColumn>
-                    <GridColumn Field=@nameof(LotModel.MAINPROCESSDEFINITIONID ) HeaderText="MAINPROCESSDEFINITIONID" Width="100"></GridColumn>
+                    <GridColumn Type="ColumnType.CheckBox"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.WORKORDERID ) HeaderText="Workorder Id" EditorSettings="@CustomerEditParams" ></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.LOTID ) HeaderText="Lot Id" IsPrimaryKey="true"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.LOTNAME ) HeaderText="Lot Name"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.STATE ) HeaderText="State" EditType="EditType.DropDownEdit">
+                        <EditTemplate>
+                            <SfDropDownList ID="Segment" @bind-Value="@((context as LotModel).STATE)" Placeholder="Lot state.." TItem="LotModel" TValue="string" DataSource="@stateData">
+                                <DropDownListFieldSettings Value="STATE" Text="STATE"></DropDownListFieldSettings>
+                            </SfDropDownList>
+                        </EditTemplate>
+                    </GridColumn>
+                    <GridColumn Field=@nameof(LotModel.QTY ) HeaderText="Qty" TextAlign="TextAlign.Right" ValidationRules="@(new ValidationRules{ Required= true })"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.PRODUCTDEFINITIONID ) HeaderText="Product Id" ValidationRules="@(new ValidationRules{ Required= true })"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.PROCESSDEFINITIONID ) HeaderText="Process Id" ValidationRules="@(new ValidationRules{ Required= true })"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.PROCESSSEGMENTID ) HeaderText="Segment Id" ValidationRules="@(new ValidationRules{ Required= true })"></GridColumn>
                 </GridColumns>
             </SfGrid>
 
@@ -79,21 +74,6 @@
 </div>
 
 @*Main  Content End *@
-
-@if (this.Lots != null)
-{
-    foreach (var item in this.Lots)
-    {
-        <div>@item.LOTID</div>
-        <div>@item.LOTNAME</div>
-        <div>@item.STATE</div>
-    }
-}
-else
-{
-    <div> Loadings.. </div>
-}
-
 
 @code {
 
@@ -110,13 +90,25 @@ else
     #endregion
 
     IEnumerable<DropDownModel> Workorders { get; set; }
+    IEnumerable<DropDownModel> State { get; set; }
     List<LotModel> Lots { get; set; }
+
+    public static List<LotModel> stateData = new List<LotModel> {
+        new LotModel() { STATE = "Actived" },
+        new LotModel() { STATE = "Created" },
+        new LotModel() { STATE = "Finished" }
+    };
 
     public string ToastMessage { get; set; }
 
     void Attach(RenderHandle renderHandle) { }
 
     async Task SetParametersAsync(ParameterView parameters) { }
+
+    public IEditorSettings CustomerEditParams = new StringEditCellParams
+    {
+        Params = new TextBoxModel() { Readonly = true }
+    };
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -132,7 +124,7 @@ else
 
             //Workorder 필터
             await GetWorkorders();
-            StateHasChanged();
+            this.filterWorkOrder.sfDropDownList.AddItem(Workorders);
         }
     }
 
@@ -148,9 +140,14 @@ else
     private async Task OncloseDate(object args)
     {
         await GetWorkorders();
-        StateHasChanged();
+        this.filterWorkOrder.sfDropDownList.AddItem(Workorders);
     }
 
+    private async Task OnValueChange(object args)
+    {
+        await GetWorkorders();
+        this.filterWorkOrder.sfDropDownList.AddItem(Workorders);
+    }
 
     private async Task GetWorkorders()
     {
@@ -189,7 +186,9 @@ else
     {
         //Parmeter 생성
         Dictionary<string, object> param = new Dictionary<string, object>();
-        param.Add("workorder", filterWorkOrder.sfDropDownList.Value);
+        param.Add("workorder", filterWorkOrder.sfDropDownList.GetItems().FirstOrDefault<DropDownModel>().Id);
+        param.Add("lotid", filterLotId.fxTextBox.Value ?? "");
+        param.Add("lotname", filterLotName.fxTextBox.Value ?? "");
 
 
         //Query Message 생성
@@ -222,9 +221,6 @@ else
         Dictionary<string, object> param = new Dictionary<string, object>();
         param.Add("lot", this.Lots);
 
-
-
-
         RuleMessage ruleMessage = new RuleMessage()
         {
             RuleName = "TrackIn",
@@ -234,7 +230,7 @@ else
         FLMessageSet messageSet = messageService.CreateMessageSet(MeesageType.Query, null, ruleMessage, null);
 
         //Message Send
-        var task = messageService.SendMessageAsync("Product", "/api/TrackIn", messageSet);
+        var task = messageService.SendMessageAsync("Product", "/api/TrackIn/TrackIn", messageSet);
         await Task.WhenAll(task);
         ReplyMessage reply = task.Result;
 
@@ -243,6 +239,48 @@ else
 
         this.ToastMessage = $"TrackIn Lot : {replyMessage} ea";
         await toast.fxToast.Show();
+    }
+
+    async Task Trackout(MouseEventArgs arg)
+    {
+        this.Lots = this.LotGrid.SelectedRecords;
+        Console.WriteLine(this.Lots.ToString());
+
+        //Parmeter 생성
+        Dictionary<string, object> param = new Dictionary<string, object>();
+        param.Add("lot", this.Lots);
+
+        RuleMessage ruleMessage = new RuleMessage()
+        {
+            RuleName = "TrackOut",
+            ParmeterKeyValues = param
+        };
+
+        FLMessageSet messageSet = messageService.CreateMessageSet(MeesageType.Query, null, ruleMessage, null);
+
+        //Message Send
+        var task = messageService.SendMessageAsync("Product", "/api/TrackOut/TrackOut", messageSet);
+        await Task.WhenAll(task);
+        ReplyMessage reply = task.Result;
+
+        //Reply Message Binding
+        string replyMessage = Convert.ToString(reply.ResultKeyValues["reply"]);
+
+        this.ToastMessage = $"TrackOut Lot : {replyMessage} ea";
+        await toast.fxToast.Show();
+    }
+
+    public void ToolbarClick(Syncfusion.Blazor.Navigations.ClickEventArgs args)
+    {
+        Console.Out.WriteLine("Toolbar Click");
+        if (args.Item.Id == "Grid_pdfexport")
+        {
+            this.LotGrid.PdfExport();
+        }
+        if (args.Item.Id == "Grid_excelexport")
+        {
+            this.LotGrid.ExcelExport();
+        }
     }
 
     public class LotModel
