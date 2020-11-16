@@ -26,6 +26,12 @@ namespace FLBX.Components
         [Parameter]
         public int LargeColSpanValue { get; set; }
 
+        [Parameter]
+        public DateTime? DateTimeValue { get; set; }
+
+        [Parameter]
+        public string InnerCssClass { get; set; } = "";
+
         public string cssClass { get; set; }
 
         protected override void OnParametersSet()

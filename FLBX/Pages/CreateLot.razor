@@ -24,8 +24,9 @@
 
     <div class="row">
         <FxDateRangePicker @ref="@filterDate" StartDate="@StartDate" EndDate="@EndDate"
-                            MediumColSpanValue="3" Placeholder="Workorder 작업 시작 일자" ></FxDateRangePicker>
-        <FxDropDown @ref="@filterProduct" IsMandantory="true" DataSourceValue="@Products" MediumColSpanValue="3" Placeholder="제품" PopupHeight="500px"></FxDropDown>
+                           MediumColSpanValue="3" Placeholder="Workorder 작업 시작 일자"
+                           IsMandantory="true" DateTimeChanged="filterDate_ValueChanged"></FxDateRangePicker>
+        <FxDropDown @ref="@filterProduct" DataSourceValue="@Products" MediumColSpanValue="3" Placeholder="제품" PopupHeight="500px"></FxDropDown>
         <FxDropDown @ref="@filterPo" MediumColSpanValue="3" Placeholder="Productorder"></FxDropDown>
         <FxTextBox @ref="@filterWoName" MediumColSpanValue="3" Placeholder="Workorder 이름 "> </FxTextBox>
     </div>
@@ -51,7 +52,7 @@
             <FxSplitContainer ContentsWidth="@(new string[]{"20%","10%","70%"})" SplitType="@FLBX.Constants.SplitContainerType.H3" cssClass="out-splitter py-3" width="100%" height="100%">
 
                 <ChildContent1>
-                    <SfGrid DataSource="@Workorders" Height="300px" RowHeight="30" AllowExcelExport="true" AllowPaging="true" AllowReordering="true" AllowFiltering="true">
+                    <SfGrid DataSource="@Workorders" Height="400px" RowHeight="30" AllowExcelExport="true" AllowPaging="true" AllowReordering="true" AllowFiltering="true">
                         <GridEvents RowSelected="RowSelectedHandler" TValue="TempModel"></GridEvents>
                         <GridColumns>
                             <GridColumn Field="WORKORDERID" IsPrimaryKey="true" HeaderText="ID" AllowResizing="true">
@@ -116,12 +117,18 @@
                             <GridColumn Field=@nameof(Lot.Qty) HeaderText="수량" EditType="EditType.NumericEdit" Width="50"></GridColumn>
                             <GridColumn Field=@nameof(Lot.Segment) HeaderText="공정" EditType="EditType.DropDownEdit" Width="80">
                                 <EditTemplate>
-                                    <SfDropDownList ID="Segment" @bind-Value="@((context as Lot).Segment)" Placeholder="Process Segments.." TItem="Lot" TValue="string" DataSource="@LocalData">
-                                        <DropDownListFieldSettings Value="Segment" Text="Segment"></DropDownListFieldSettings>
+                                    <SfDropDownList ID="Segment" @bind-Value="@((context as DropDownModel).Name)" Placeholder="Process Segments.." TItem="DropDownModel" TValue="string" DataSource="@Segments">
+                                        <DropDownListFieldSettings Value="Id" Text="Name"></DropDownListFieldSettings>
                                     </SfDropDownList>
                                 </EditTemplate>
                             </GridColumn>
-                            <GridColumn Field=@nameof(Lot.Equitment) HeaderText="설비" EditType="EditType.DropDownEdit" Width="80"></GridColumn>
+                            <GridColumn Field=@nameof(Lot.Equitment) HeaderText="설비" EditType="EditType.DropDownEdit" Width="80">
+                                @*<EditTemplate>
+                                    <SfDropDownList ID="Equipment" @bind-Value="@((context as DropDownModel).Name)" Placeholder="Process Segments.." TItem="DropDownModel" TValue="string" DataSource="@Equipments">
+                                        <DropDownListFieldSettings Value="Id" Text="Name"></DropDownListFieldSettings>
+                                    </SfDropDownList>
+                                </EditTemplate>*@
+                            </GridColumn>
                         </GridColumns>
                     </SfGrid>
                 </ChildContent3>
@@ -153,6 +160,9 @@
     DateTime EndDate = DateTime.Now;
 
     IEnumerable<DropDownModel> Products { get; set; }
+    static IEnumerable<DropDownModel> Segments { get; set; }
+    static IEnumerable<DropDownModel> Equipments { get; set; }
+
     List<TempModel> Workorders { get; set; }
     List<Lot> Lots { get; set; }
 
@@ -180,9 +190,9 @@
 
     }
 
-    void filterDate_ValueChanged(ChangedEventArgs<DateTime?> args)
+    void filterDate_ValueChanged(RangeEventArgs args)
     {
-
+        dlgPop.Show("Date",args.StartDate + " / " + args.EndDate);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -193,6 +203,8 @@
         //filter 초기값 입력
         if (firstRender)
         {
+            await GetSegmentInfo();
+            await GetEquipmentInfo();
             await GetProductInfo();
             this.filterProduct.sfDropDownList.AddItem(Products);
 
@@ -221,6 +233,54 @@
 
         //Reply Message Binding
         Products = JsonSerializer.Deserialize<IEnumerable<DropDownModel>>(Convert.ToString(reply.ResultKeyValues["reply"]));
+    }
+
+    private async Task GetSegmentInfo()
+    {
+        //Query Message 생성
+        QueryMessage queryMessage = new QueryMessage()
+        {
+            QueryId = "GetProcessSegment",
+            QueryType = "Filter",
+            QueryVersion = "001",
+            SiteId = "A_10",
+            ParameterKeyValue = new Dictionary<string, object>()
+
+        };
+
+        FLMessageSet messageSet = messageService.CreateMessageSet(MeesageType.Query, queryMessage, null, null);
+
+        //Message Send
+        var task1 = messageService.SendMessageAsync("Product", "/query/executequery", messageSet);
+        await Task.WhenAll(task1);
+        ReplyMessage reply = task1.Result;
+
+        //Reply Message Binding
+        Segments = JsonSerializer.Deserialize<IEnumerable<DropDownModel>>(Convert.ToString(reply.ResultKeyValues["reply"]));
+    }
+
+    private async Task GetEquipmentInfo()
+    {
+        //Query Message 생성
+        QueryMessage queryMessage = new QueryMessage()
+        {
+            QueryId = "GetEquipment",
+            QueryType = "Filter",
+            QueryVersion = "001",
+            SiteId = "A_10",
+            ParameterKeyValue = new Dictionary<string, object>()
+
+        };
+
+        FLMessageSet messageSet = messageService.CreateMessageSet(MeesageType.Query, queryMessage, null, null);
+
+        //Message Send
+        var task1 = messageService.SendMessageAsync("Product", "/query/executequery", messageSet);
+        await Task.WhenAll(task1);
+        ReplyMessage reply = task1.Result;
+
+        //Reply Message Binding
+        Equipments = JsonSerializer.Deserialize<IEnumerable<DropDownModel>>(Convert.ToString(reply.ResultKeyValues["reply"]));
     }
 
     /// <summary>
@@ -280,10 +340,9 @@
         {
             Lot newLot = new Lot();
             newLot.Id = Guid.NewGuid().ToString();
-            newLot.Name = $"{i}:TestLot";
+            newLot.Name = newLot.Id.Substring(0, 4) + i.ToString();
             newLot.Qty = qty;
-            newLot.Segment = "setment01";
-            newLot.Equitment = "eqp001";
+            newLot.Segment = "701";
 
             Lots.Add(newLot);
         }
