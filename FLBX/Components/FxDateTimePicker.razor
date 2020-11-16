@@ -2,7 +2,14 @@
 
 <div class="@cssClass">
 
-    <SfDateTimePicker @ref="sfDateTimePicker" TValue="DateTime?" Min='@MinDateTime' Max='@MaxDateTime' Value='@DateTimeValue' Placeholder="@Placeholder"></SfDateTimePicker>
+    <SfDateTimePicker @ref="sfDateTimePicker"
+                      Format="@DateFormat"
+                      TValue="DateTime?"                    
+                    
+                      Placeholder="@Placeholder"                      
+                      >
+
+    </SfDateTimePicker>
 </div>
 
 @code {

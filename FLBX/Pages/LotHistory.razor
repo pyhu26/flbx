@@ -18,10 +18,12 @@
 <FLBX.Components.FxFilterGroup>
 
     <div class="row">
-        <FxDateTimePicker @ref="filterFrom" MinDateTime=" DateTime.Now.AddDays(-14)" MaxDateTime="DateTime.Now.AddDays(1)" MediumColSpanValue="3" Placeholder="생산시작일"></FxDateTimePicker>
-        <FxDateTimePicker @ref="filterTo" MinDateTime=" DateTime.Now.AddDays(-14)" MaxDateTime="DateTime.Now.AddDays(1)" MediumColSpanValue="3" Placeholder="생산종료일"></FxDateTimePicker>
-        <FxTextBox MediumColSpanValue="3" Placeholder="Lot Id검색:"></FxTextBox>
-        <FxTextBox MediumColSpanValue="3" Placeholder="Lot이름검색:"></FxTextBox>
+        <FxDateTimePicker @ref="filterFrom" DateFormat="'From : 'yyyy-MM-dd hh:mm:ss"  MediumColSpanValue="3" Placeholder="생산시작일"></FxDateTimePicker>
+        <FxDateTimePicker @ref="filterTo" DateFormat="'To : 'yyyy-MM-dd hh:mm:ss"  MediumColSpanValue="3" Placeholder="생산종료일"></FxDateTimePicker>
+        <FxTextBox @ref="filterLotId" MediumColSpanValue="3" Placeholder="Lot Id검색:"></FxTextBox>
+        <FxTextBox @ref="filterLotName" MediumColSpanValue="3" Placeholder="Lot이름검색:"></FxTextBox>
+        @*<SfTextBox Placeholder="Lot Id검색" FloatLabelType="@FloatLabelType.Never"  @bind-Value="@LotId"/>
+        <SfTextBox Placeholder="Lot 이름검색" FloatLabelType="@FloatLabelType.Never" @bind-Value="@LotName"/>*@
     </div>
 
     <div class="row d-flex justify-content-end">
@@ -43,21 +45,20 @@
 
                 <FxSplitContainer ContentsWidth="@(new string[]{"40%","60%"})" SplitType="@FLBX.Constants.SplitContainerType.H2" Title1="Lot Group by WorkOrder" Title2="Lot History"cssClass="out-splitter py-3" width="100%" height="100%">
                     <ChildContent1>
-                        <SfGrid DataSource="@Workorders" AllowGrouping="true" AllowPaging="true" AllowTextWrap="true" AllowRowDragAndDrop="true" AllowResizing="true" AllowReordering="true" AllowFiltering="true" AllowSelection="true">
-                            <GridGroupSettings Columns="@GroupedColumns"></GridGroupSettings>
-                            <GridEvents RowSelected="RowSelectHander" TValue="TempModel"></GridEvents>
+                        <SfGrid DataSource="@LotList"   AllowGrouping="true" AllowPaging="true" AllowTextWrap="true"  AllowResizing="true" AllowReordering="true" AllowFiltering="true" AllowSelection="true">
+                            <GridGroupSettings @ref="gridGroup" Columns="@GroupedColumns" ></GridGroupSettings>
+                            <GridEvents RowSelected="RowSelectHander" TValue="TempLotModel"></GridEvents>
                             <GridColumns>
-                                <GridColumn Field="WORKORDERID" IsPrimaryKey="true" HeaderText="WORKORDERID" Width="100"></GridColumn>
-                                <GridColumn Field="WORKORDERNAME" HeaderText="NAME" TextAlign="TextAlign.Right" Width="50"></GridColumn>
-                                <GridColumn Field="QTY" HeaderText="QTY" Width="50"></GridColumn>
-                                <GridColumn Field="PRODUCTDEFINITIONID" HeaderText="PRODUCT" Width="80"></GridColumn>
-                                <GridColumn Field="PRODUCTORDERID" HeaderText="PO" Width="80"></GridColumn>
+                                <GridColumn Field="LOTID" IsPrimaryKey="true"HeaderText="LOT ID" TextAlign="TextAlign.Left" Width="100"></GridColumn>
+                                <GridColumn Field="WORKORDERID" IsPrimaryKey="true" HeaderText="WORKORDER ID" Width="100"></GridColumn>
+                                <GridColumn Field="PRODUCTDEFINITIONID" HeaderText="PRODUCT ID" Width="80"></GridColumn>
+                               
                             </GridColumns>
                         </SfGrid>
                     </ChildContent1>
                   
                     <ChildContent2>
-                        <SfGrid DataSource="@LotHist" AllowGrouping="true" AllowPaging="true" AllowTextWrap="true" AllowRowDragAndDrop="true" AllowResizing="true" AllowReordering="true" AllowFiltering="true">
+                        <SfGrid DataSource="@LotHist"  AllowPaging="true" AllowTextWrap="true" AllowResizing="true" AllowReordering="true" AllowFiltering="true">
                             <GridColumns>
                                 <GridColumn Field="LOTID" IsPrimaryKey="true" HeaderText="LotId" Width="100"></GridColumn>
                                 <GridColumn Field="LOTNAME" HeaderText="이름" TextAlign="TextAlign.Right" Width="50"></GridColumn>
@@ -75,27 +76,33 @@
     @*Main  Content End *@
 
     @code {
-        FxDateTimePicker filterFrom;
-        FxDateTimePicker filterTo;
-        FxTextBox filterLotId;
-        FxTextBox filterLotName;
+
+            GridGroupSettings gridGroup;
+
+            //public DateTime? DateValueFrom { get; set; }
+            //public DateTime? DateValueTo { get; set; }
+
+            FxDateTimePicker filterFrom;
+            FxDateTimePicker filterTo;
+            FxTextBox filterLotId;
+            FxTextBox filterLotName;
 
 
-        void Attach(RenderHandle renderHandle) { }
-        List<TempModel> Workorders { get; set; } = new List<TempModel>();
-        List<TempLotHistModel> LotHist { get; set; } = new List<TempLotHistModel>();
+            void Attach(RenderHandle renderHandle) { }
+            List<TempLotModel> LotList { get; set; } = new List<TempLotModel>();
+            List<TempLotHistModel> LotHist { get; set; } = new List<TempLotHistModel>();
         public SfButton btnQuery;
-        public List<WorkOrderDetails> GridData { get; set; }
-        public List<Lot> GridDataLot { get; set; }
+
         public string[] GroupedColumns = new string[] { "WORKORDERID" };
         [Parameter]
         public DateTime? From { get; set; }
         [Parameter]
         public DateTime? To { get; set; }
         [Parameter]
-        public string LotId { get; set; }
+        public string LotId { get; set; } = "";
         [Parameter]
-        public string LotName { get; set; }
+        public string LotName { get; set; } = "";
+
         protected override void OnInitialized()
         {
             //GridData = WorkOrderDetails.GetAllRecords();
@@ -111,9 +118,10 @@
             if (firstRender)
             {
                 //Workorder 생산 시작일 필터
-                filterFrom.DateTimeValue = DateTime.Now.AddDays(-14);
-                filterTo.DateTimeValue = DateTime.Now;
-
+                //DateValueFrom = DateTime.Now.AddDays(-14);
+                //DateValueTo = DateTime.Now;
+                filterFrom.sfDateTimePicker.Value= DateTime.Now.AddDays(-14);
+                filterTo.sfDateTimePicker.Value = DateTime.Now;
 
                 StateHasChanged();
             }
@@ -122,12 +130,17 @@
         {
             //Parmeter 생성
             Dictionary<string, object> param = new Dictionary<string, object>();
-            param.Add("from", filterFrom.DateTimeValue);
-            param.Add("to", filterTo.DateTimeValue);
+            param.Add("from", filterFrom.sfDateTimePicker.Value?.ToString("yyyy-MM-dd hh:mm:ss"));
+            param.Add("to", filterTo.sfDateTimePicker.Value?.ToString("yyyy-MM-dd hh:mm:ss"));
+
+          //  if (String.IsNullOrEmpty(filterLotId.fxTextBox.Value)
+            param.Add("lotid", filterLotId.fxTextBox.Value);
+       
+            param.Add("lotname", filterLotName.fxTextBox.Value);
             //Query Message 생성
             QueryMessage queryMeasage = new QueryMessage()
             {
-                QueryId = "GetWorkorder",
+                QueryId = "GetLotHistory",
                 QueryType = "Inquiry",
                 QueryVersion = "001",
                 SiteId = "A_10",
@@ -142,18 +155,18 @@
             ReplyMessage reply = task.Result;
 
             //Reply Message Binding
-            this.Workorders = JsonSerializer.Deserialize<List<TempModel>>(Convert.ToString(reply.ResultKeyValues["reply"]));
+            this.LotList = JsonSerializer.Deserialize<List<TempLotModel>>(Convert.ToString(reply.ResultKeyValues["reply"]));
         }
 
-        private async Task RowSelectHander(RowSelectEventArgs<TempModel> args)
+        private async Task RowSelectHander(RowSelectEventArgs<TempLotModel> args)
         {
             //Todo lothisttory query
             //Query Message 생성
             QueryMessage queryMeasage = new QueryMessage()
             {
-                QueryId = "GetLotHistory",
+                QueryId = "GetLotHistoryDetail",
                 QueryType = "Inquiry",
-                QueryVersion = "002",
+                QueryVersion = "001",
                 SiteId = "A_10",
                 ParameterKeyValue = new Dictionary<string, object>() { { "workorder", args.Data.WORKORDERID } }
             };
@@ -168,13 +181,12 @@
             //Reply Message Binding
             this.LotHist = JsonSerializer.Deserialize<List<TempLotHistModel>>(Convert.ToString(reply.ResultKeyValues["reply"]));
         }
-        class TempModel
+        class TempLotModel
         {
             public string WORKORDERID { get; set; }
-            public string WORKORDERNAME { get; set; }
-            public float QTY { get; set; }
+            public string LOTID { get; set; }
             public string PRODUCTDEFINITIONID { get; set; }
-            public string PRODUCTORDERID { get; set; }
+
 
         }
         class TempLotHistModel

@@ -14,13 +14,10 @@ namespace FLBX.Components
         public SfDateTimePicker<DateTime?> sfDateTimePicker { get; set; }
         [Parameter]
         public string Placeholder { get; set; }
+       
+      
         [Parameter]
-        public DateTime MinDateTime { get; set; }
-        [Parameter]
-        public DateTime MaxDateTime { get; set; }
-        [Parameter]
-        public DateTime? DateTimeValue { get; set; }
-
+        public string DateFormat { get; set; }
         [Parameter]
         public int SmallColSpanValue { get; set; }
         [Parameter]
@@ -53,7 +50,7 @@ namespace FLBX.Components
 
             this.cssClass = css;
 
-            StateHasChanged();
+            //StateHasChanged();
         }
 
         public string AuthorityLevel { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }

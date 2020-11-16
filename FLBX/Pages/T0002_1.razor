@@ -1,6 +1,6 @@
 ﻿@implements Microsoft.AspNetCore.Components.IComponent
 @using Syncfusion.Blazor.Grids
-
+@using FLBX.Models
 
 <SfGrid ID="Grid" @ref="Grid" DataSource="@GridDataLot" AllowSelection="true" AllowSorting="true" Height="600" RowHeight="30" AllowExcelExport="true" AllowPdfExport="true" AllowPaging="true" Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel", "ExcelExport", "CsvExport", "PdfExport"})">
     <GridEvents OnToolbarClick="ToolbarClick" TValue="Lot"></GridEvents>
