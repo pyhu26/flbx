@@ -21,7 +21,6 @@
 
 
 <FLBX.Components.FxFilterGroup>
-
     <div class="row">
         <FxDateRangePicker @ref="@filterDate" StartDate="@StartDate" EndDate="@EndDate"
                            MediumColSpanValue="3" Placeholder="Workorder 작업 시작 일자"
@@ -43,8 +42,8 @@
 
 </FLBX.Components.FxFilterGroup>
 
-<FxSpinner @ref="@fxSpinner"></FxSpinner>
 <FxDialog @ref="@dlgPop" PopupType="Constants.DialogType.Alert"></FxDialog>
+<FxSpinner @ref="@fxSpinner"></FxSpinner>
 
 <div class="row">
     <div class="col-lg-12 px-0">
@@ -52,7 +51,7 @@
             <FxSplitContainer ContentsWidth="@(new string[]{"20%","10%","70%"})" SplitType="@FLBX.Constants.SplitContainerType.H3" cssClass="out-splitter py-3" width="100%" height="100%">
 
                 <ChildContent1>
-                    <SfGrid DataSource="@Workorders" Height="400px" RowHeight="30" AllowExcelExport="true" AllowPaging="true" AllowReordering="true" AllowFiltering="true">
+                    <SfGrid @ref="@gridWorkorder" DataSource="@Workorders" Height="400px" RowHeight="30" AllowExcelExport="true" AllowPaging="true" AllowReordering="true" AllowFiltering="true">
                         <GridEvents RowSelected="RowSelectedHandler" TValue="TempModel"></GridEvents>
                         <GridColumns>
                             <GridColumn Field="WORKORDERID" IsPrimaryKey="true" HeaderText="ID" AllowResizing="true">
@@ -65,6 +64,7 @@
                                                     <div id="txt">Qty : @wo.QTY</div>
                                                     <div id="txt">Product : @wo.PRODUCTDEFINITIONID</div>
                                                     <div id="txt">PO : @wo.PRODUCTORDERID</div>
+                                                    <div id="txt">Process : @wo.PROCESSDEFINITIONID</div>
                                                 </Content>
                                             </TooltipTemplates>
                                             <span id="txt">@wo.WORKORDERID</span>
@@ -82,32 +82,33 @@
                 </ChildContent1>
                 <ChildContent2>
                     <div class="p-2">
-                        <SfTextBox Placeholder="WorkOrder" FloatLabelType="@FloatLabelType.Never" Value="@selectedWorkorderId"></SfTextBox>
+                        <SfTextBox Placeholder="WorkOrder" FloatLabelType="@FloatLabelType.Never" Value="@selectedWorkorderId" Readonly="true"></SfTextBox>
                     </div>
                     <div class="p-2">
-                        <SfTextBox Placeholder="잔여Qty" FloatLabelType="@FloatLabelType.Never" Readonly="true"></SfTextBox>
+                        <SfTextBox @ref="txtWorkorderQty" Placeholder="잔여Qty" Format="잔여Qty (###)" Value="@(selectedWorkorderQty.ToString())" Readonly="true"></SfTextBox>
                     </div>
                     <div class="p-2">
-                        <SfNumericTextBox @ref="spinLotCount" Format="(Lot개수) ###" TValue="double?" Value=10></SfNumericTextBox>
+                        <SfNumericTextBox @ref="spinLotCount" Format="Lot개수 (###)" TValue="double?" Value=10></SfNumericTextBox>
                     </div>
                     <div class="p-2">
-                        <SfNumericTextBox @ref="spinLotQty" Format="(Lot별Qty) ###" TValue="double?" Value=10></SfNumericTextBox>
+                        <SfNumericTextBox @ref="spinLotQty" Format="Lot별Qty (###)" TValue="double?" Value=10></SfNumericTextBox>
                     </div>
                     <div class="p-2">
                         <SfTextBox Placeholder="Prefix Keyword:" FloatLabelType="@FloatLabelType.Never"></SfTextBox>
                     </div>
                     <div class="p-2">
-                        <SfTextBox Placeholder="Remark:" FloatLabelType="@FloatLabelType.Never"></SfTextBox>
+                        <SfTextBox @ref="txtRemark" Placeholder="Remark:" FloatLabelType="@FloatLabelType.Never"></SfTextBox>
                     </div>
                     <div class="p-2">
-                        <SfTextBox Placeholder="Discription:" FloatLabelType="@FloatLabelType.Never"></SfTextBox>
+                        <SfTextBox @ref="txtDesc" Placeholder="Discription:" FloatLabelType="@FloatLabelType.Never"></SfTextBox>
                     </div>
                     <div class="p-2">
                         <SfButton IsPrimary="true" OnClick="@TemporaryCreateLot">Lot임시 생성</SfButton>
                     </div>
                 </ChildContent2>
                 <ChildContent3>
-                    <SfGrid @ref="GridLot" DataSource="@Lots" Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel","Search","Print","ExcelExport" })" AllowPaging="true" AllowExcelExport="true">
+                    <SfGrid @ref="gridLot" DataSource="@Lots" Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel","Search","Print","ExcelExport" })" AllowPaging="true" AllowExcelExport="true">
+                        <GridEvents DataBound="gridLot_DataBound" TValue="Lot"></GridEvents>
                         <GridEditSettings ShowDeleteConfirmDialog="true" AllowAdding="true" AllowDeleting="true" AllowEditing="true" AllowNextRowEdit="true" AllowEditOnDblClick="false" Mode="EditMode.Normal"></GridEditSettings>
                         <GridSelectionSettings CheckboxOnly="true"></GridSelectionSettings>
                         <GridColumns>
@@ -117,8 +118,8 @@
                             <GridColumn Field=@nameof(Lot.Qty) HeaderText="수량" EditType="EditType.NumericEdit" Width="50"></GridColumn>
                             <GridColumn Field=@nameof(Lot.Segment) HeaderText="공정" EditType="EditType.DropDownEdit" Width="80">
                                 <EditTemplate>
-                                    <SfDropDownList ID="Segment" @bind-Value="@((context as DropDownModel).Name)" Placeholder="Process Segments.." TItem="DropDownModel" TValue="string" DataSource="@Segments">
-                                        <DropDownListFieldSettings Value="Id" Text="Name"></DropDownListFieldSettings>
+                                    <SfDropDownList ID="Segment" @bind-Value="@((context as Lot).Segment)" Placeholder="Process Segments.." TItem="Lot" TValue="string" DataSource="@Segments">
+                                        <DropDownListFieldSettings Value="Segment" Text="Segment"></DropDownListFieldSettings>
                                     </SfDropDownList>
                                 </EditTemplate>
                             </GridColumn>
@@ -147,54 +148,46 @@
     FxDropDown filterProduct;
     FxDropDown filterPo;
     FxTextBox filterWoName;
+    SfTextBox txtWorkorderQty;
     SfNumericTextBox<double?> spinLotCount;
     SfNumericTextBox<double?> spinLotQty;
     FxToast toast;
-    SfGrid<Lot> GridLot;
+    SfGrid<TempModel> gridWorkorder;
+    SfGrid<Lot> gridLot;
     FxDialog dlgPop;
     FxSpinner fxSpinner;
+    SfTextBox txtRemark;
+    SfTextBox txtDesc;
 
     #endregion
 
     DateTime StartDate = DateTime.Now.AddDays(-7);
     DateTime EndDate = DateTime.Now;
 
-    IEnumerable<DropDownModel> Products { get; set; }
-    static IEnumerable<DropDownModel> Segments { get; set; }
-    static IEnumerable<DropDownModel> Equipments { get; set; }
+    static List<DropDownModel> Products { get; set; } = new List<DropDownModel>();
+    static List<Lot> Segments { get; set; }
+    static List<Lot> Equipments { get; set; }
 
     List<TempModel> Workorders { get; set; }
-    List<Lot> Lots { get; set; }
+    List<Lot> Lots { get; set; } = new List<Lot>();
 
     public string ToastMessage { get; set; }
 
     public string selectedWorkorderId { get; set; }
-
-    public static List<Lot> LocalData = new List<Lot> {
-            new Lot() { Segment = "setment01" },
-            new Lot() { Segment = "setment02" },
-            new Lot() { Segment = "setment03" }
-
-    };
-
+    public float selectedWorkorderQty { get; set; }
 
     void Attach(RenderHandle renderHandle) { }
 
     async Task SetParametersAsync(ParameterView parameters) { }
 
+
+    #region Intialize
     protected override void OnInitialized()
     {
         base.OnInitialized();
 
         //Workorder 생산 시작일 필터
-
     }
-
-    void filterDate_ValueChanged(RangeEventArgs args)
-    {
-        dlgPop.Show("Date",args.StartDate + " / " + args.EndDate);
-    }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
 
@@ -205,101 +198,49 @@
         {
             await GetSegmentInfo();
             await GetEquipmentInfo();
-            await GetProductInfo();
-            this.filterProduct.sfDropDownList.AddItem(Products);
 
+            //this.filterProduct.sfDropDownList.AddItem(Products);
         }
     }
+    #endregion
 
-    private async Task GetProductInfo()
+    #region Events
+    async Task gridLot_DataBound(object args)
     {
-        //Query Message 생성
-        QueryMessage queryMessage = new QueryMessage()
-        {
-            QueryId = "GetProduct",
-            QueryType = "Filter",
-            QueryVersion = "001",
-            SiteId = "A_10",
-            ParameterKeyValue = new Dictionary<string, object>()
-
-        };
-
-        FLMessageSet messageSet = messageService.CreateMessageSet(MeesageType.Query, queryMessage, null, null);
-
-        //Message Send
-        var task1 = messageService.SendMessageAsync("Product", "/query/executequery", messageSet);
-        await Task.WhenAll(task1);
-        ReplyMessage reply = task1.Result;
-
-        //Reply Message Binding
-        Products = JsonSerializer.Deserialize<IEnumerable<DropDownModel>>(Convert.ToString(reply.ResultKeyValues["reply"]));
+        await CalculateRemainWorkorderQty();
     }
 
-    private async Task GetSegmentInfo()
+    async Task filterDate_ValueChanged(RangeEventArgs args)
     {
-        //Query Message 생성
-        QueryMessage queryMessage = new QueryMessage()
-        {
-            QueryId = "GetProcessSegment",
-            QueryType = "Filter",
-            QueryVersion = "001",
-            SiteId = "A_10",
-            ParameterKeyValue = new Dictionary<string, object>()
-
-        };
-
-        FLMessageSet messageSet = messageService.CreateMessageSet(MeesageType.Query, queryMessage, null, null);
-
-        //Message Send
-        var task1 = messageService.SendMessageAsync("Product", "/query/executequery", messageSet);
-        await Task.WhenAll(task1);
-        ReplyMessage reply = task1.Result;
-
-        //Reply Message Binding
-        Segments = JsonSerializer.Deserialize<IEnumerable<DropDownModel>>(Convert.ToString(reply.ResultKeyValues["reply"]));
+        await GetProductInfo();
     }
 
-    private async Task GetEquipmentInfo()
+    async Task RowSelectedHandler(RowSelectEventArgs<TempModel> arg)
     {
-        //Query Message 생성
-        QueryMessage queryMessage = new QueryMessage()
-        {
-            QueryId = "GetEquipment",
-            QueryType = "Filter",
-            QueryVersion = "001",
-            SiteId = "A_10",
-            ParameterKeyValue = new Dictionary<string, object>()
+        selectedWorkorderId = arg.Data.WORKORDERID;
+        selectedWorkorderQty = arg.Data.QTY;
 
-        };
-
-        FLMessageSet messageSet = messageService.CreateMessageSet(MeesageType.Query, queryMessage, null, null);
-
-        //Message Send
-        var task1 = messageService.SendMessageAsync("Product", "/query/executequery", messageSet);
-        await Task.WhenAll(task1);
-        ReplyMessage reply = task1.Result;
-
-        //Reply Message Binding
-        Equipments = JsonSerializer.Deserialize<IEnumerable<DropDownModel>>(Convert.ToString(reply.ResultKeyValues["reply"]));
+        await GetLotInfo(selectedWorkorderId);
     }
 
-    /// <summary>
-    /// GetWorkorder
-    /// </summary>
-    /// <param name="arg"></param>
-    /// <returns></returns>
+    #endregion
+
+    #region Functions
+    private async Task CalculateRemainWorkorderQty()
+    {
+        var sum = Lots.Sum(r => r.Qty);
+        var originalQty = Workorders.Where(r => r.WORKORDERID == selectedWorkorderId).FirstOrDefault().QTY;
+        var calculatedQty = originalQty - sum;
+        selectedWorkorderQty = (float)calculatedQty;
+    }
     private async Task GetWorkorders(MouseEventArgs arg)
     {
+
         //Parmeter 생성
         Dictionary<string, object> param = new Dictionary<string, object>();
         param.Add("from", filterDate.sfDateRangePicker.StartDate.Value.ToString("yyyy-MM-dd"));
         param.Add("to", filterDate.sfDateRangePicker.EndDate.Value.ToString("yyyy-MM-dd"));
-        param.Add("product", filterProduct.sfDropDownList.GetItems().FirstOrDefault<DropDownModel>().Id);
-
-        string msg = $"Product : {param["product"].ToString()}";
-
-        var toastModel = new ToastModel { Title = "Information!", Content = msg, CssClass = "e-toast-info", Icon = "e-info toast-icons" };
-        toast.fxToast.Show(toastModel);
+        param.Add("product", filterProduct.sfDropDownList.Value);
 
 
 
@@ -323,29 +264,152 @@
 
         //Reply Message Binding
         Workorders = JsonSerializer.Deserialize<List<TempModel>>(Convert.ToString(reply.ResultKeyValues["reply"]));
+
+        string msg = $"[{Workorders.Count()}] 건의 Workorder 정보가 조회 되었습니다. : {param["product"].ToString()}";
+        var toastModel = new ToastModel { Title = "Information!", Content = msg, CssClass = "e-toast-info", Icon = "e-info toast-icons" };
+        toast.fxToast.Show(toastModel);
+    }
+    private async Task GetProductInfo()
+    {
+        Products.Clear();
+
+        Dictionary<string, object> param = new Dictionary<string, object>();
+        param.Add("from", filterDate.sfDateRangePicker.StartDate.Value.ToString("yyyy-MM-dd"));
+        param.Add("to", filterDate.sfDateRangePicker.EndDate.Value.ToString("yyyy-MM-dd"));
+
+        //Query Message 생성
+        QueryMessage queryMessage = new QueryMessage()
+        {
+            QueryId = "GetProduct",
+            QueryType = "Filter",
+            QueryVersion = "001",
+            SiteId = "A_10",
+            ParameterKeyValue = param
+
+        };
+
+        FLMessageSet messageSet = messageService.CreateMessageSet(MeesageType.Query, queryMessage, null, null);
+
+        //Message Send
+        var task1 = messageService.SendMessageAsync("Product", "/query/executequery", messageSet);
+        await Task.WhenAll(task1);
+        ReplyMessage reply = task1.Result;
+
+        //Reply Message Binding
+        Products = JsonSerializer.Deserialize<List<DropDownModel>>(Convert.ToString(reply.ResultKeyValues["reply"]));
     }
 
-    void RowSelectedHandler(RowSelectEventArgs<TempModel> arg)
+    private async Task GetSegmentInfo()
     {
-        selectedWorkorderId = arg.Data.WORKORDERID;
+        //Query Message 생성
+        QueryMessage queryMessage = new QueryMessage()
+        {
+            QueryId = "GetProcessSegment",
+            QueryType = "Filter",
+            QueryVersion = "001",
+            SiteId = "A_10",
+            ParameterKeyValue = new Dictionary<string, object>()
+
+        };
+
+        FLMessageSet messageSet = messageService.CreateMessageSet(MeesageType.Query, queryMessage, null, null);
+
+        //Message Send
+        var task1 = messageService.SendMessageAsync("Product", "/query/executequery", messageSet);
+        await Task.WhenAll(task1);
+        ReplyMessage reply = task1.Result;
+
+        //Reply Message Binding
+        IEnumerable<DropDownModel> ddm = JsonSerializer.Deserialize<IEnumerable<DropDownModel>>(Convert.ToString(reply.ResultKeyValues["reply"]));
+
+        Segments = new List<Lot>();
+        foreach (var segment in ddm)
+        {
+            Lot segmentLot = new Lot();
+            segmentLot.Segment = segment.Id;
+            Segments.Add(segmentLot);
+        }
     }
 
-    void TemporaryCreateLot(MouseEventArgs arg)
+    private async Task GetEquipmentInfo()
     {
-        Lots = new List<Lot>();
+        //Query Message 생성
+        QueryMessage queryMessage = new QueryMessage()
+        {
+            QueryId = "GetEquipment",
+            QueryType = "Filter",
+            QueryVersion = "001",
+            SiteId = "A_10",
+            ParameterKeyValue = new Dictionary<string, object>()
+
+        };
+
+        FLMessageSet messageSet = messageService.CreateMessageSet(MeesageType.Query, queryMessage, null, null);
+
+        //Message Send
+        var task1 = messageService.SendMessageAsync("Product", "/query/executequery", messageSet);
+        await Task.WhenAll(task1);
+        ReplyMessage reply = task1.Result;
+
+        //Reply Message Binding
+        //Equipments = JsonSerializer.Deserialize<IEnumerable<DropDownModel>>(Convert.ToString(reply.ResultKeyValues["reply"]));
+    }
+
+    private async Task GetLotInfo(string workorderId)
+    {
+        Dictionary<string, object> param = new Dictionary<string, object>();
+        param.Add("workorder", workorderId);
+        param.Add("lotid", "");
+        param.Add("lotname", "");
+
+        //Query Message 생성
+        QueryMessage queryMessage = new QueryMessage()
+        {
+            QueryId = "GetLot",
+            QueryType = "Inquiry",
+            QueryVersion = "001",
+            SiteId = "A_10",
+            ParameterKeyValue = param
+
+        };
+
+        FLMessageSet messageSet = messageService.CreateMessageSet(MeesageType.Query, queryMessage, null, null);
+
+        //Message Send
+        var task1 = messageService.SendMessageAsync("Product", "/query/executequery", messageSet);
+        await Task.WhenAll(task1);
+        ReplyMessage reply = task1.Result;
+
+        //Reply Message Binding
+        Lots = JsonSerializer.Deserialize<List<Lot>>(Convert.ToString(reply.ResultKeyValues["reply"]));
+    }
+    async Task TemporaryCreateLot(MouseEventArgs arg)
+    {
+
 
         int count = Convert.ToInt32(spinLotCount.Value);
         int qty = Convert.ToInt32(spinLotQty.Value);
+
+        var selectedWorkorder = Workorders.Where(r => r.WORKORDERID == selectedWorkorderId).FirstOrDefault();
         for (int i = 0; i < count; i++)
         {
+
             Lot newLot = new Lot();
             newLot.Id = Guid.NewGuid().ToString();
             newLot.Name = newLot.Id.Substring(0, 4) + i.ToString();
             newLot.Qty = qty;
-            newLot.Segment = "701";
+            newLot.WorkorderId = selectedWorkorderId.Trim();
+            newLot.ProcessDefinitionId = selectedWorkorder.PROCESSDEFINITIONID;
+            newLot.ProductDefinitionId = selectedWorkorder.PRODUCTDEFINITIONID;
+            newLot.Remark = txtRemark.Value;
+            newLot.Description = txtRemark.Value;
+
 
             Lots.Add(newLot);
         }
+
+        await CalculateRemainWorkorderQty();
+        gridLot.Refresh();
     }
 
     async Task CreateLots(MouseEventArgs arg)
@@ -357,7 +421,7 @@
         {
             //Parmeter 생성
 
-            List<Lot> selectedLot = GridLot.GetSelectedRecords().Result;
+            List<Lot> selectedLot = gridLot.GetSelectedRecords().Result;
 
             Dictionary<string, object> param = new Dictionary<string, object>();
             param.Add("lot", selectedLot);
@@ -378,11 +442,14 @@
             //Reply Message Binding
             string replyMessage = Convert.ToString(reply.ResultKeyValues["reply"]);
 
-            var msg = $"Create Lot : {replyMessage} ea";
+            var msg = $"요청하신 Lot이 생성 되었습니다. ({Convert.ToInt32(replyMessage) / 2}) ea ";
 
             await fxSpinner.Show();
             dlgPop.Show("Information", msg);
-            //await toast.fxToast.Show();
+
+            //Lot Grid 초기화
+            await Initialize_gridLot();
+
         }
         catch (Exception ex)
         {
@@ -392,10 +459,43 @@
         {
             await fxSpinner.Hide();
         }
-
-
-
     }
+
+    public async Task Initialize_gridLot()
+    {
+        await gridWorkorder.ClearFiltering();
+        Lots.Clear();
+        gridLot.Refresh();
+        await GetLotInfo(selectedWorkorderId);
+    }
+
+    public async Task InitializePage()
+    {
+        Workorders.Clear();
+        Lots.Clear();
+        gridLot.Refresh();
+        gridWorkorder.Refresh();
+        await GetProductInfo();
+    }
+    #endregion
+
+
+
+
+
+
+
+
+    /// <summary>
+    /// GetWorkorder
+    /// </summary>
+    /// <param name="arg"></param>
+    /// <returns></returns>
+
+
+
+
+
 
     class TempModel
     {
@@ -404,6 +504,7 @@
         public float QTY { get; set; }
         public string PRODUCTDEFINITIONID { get; set; }
         public string PRODUCTORDERID { get; set; }
+        public string PROCESSDEFINITIONID { get; set; }
 
     }
 

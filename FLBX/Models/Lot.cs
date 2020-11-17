@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace FLBX.Models
@@ -98,11 +99,27 @@ namespace FLBX.Models
 
             return LotDetail;
         }
+
+        [JsonPropertyName("LOTID")]
         public string Id { get; set; }
+        [JsonPropertyName("LOTNAME")]
         public string Name { get; set; }
-        public int? Qty { get; set; }
+        [JsonPropertyName("QTY")]
+        public double Qty { get; set; }
+        [JsonPropertyName("PROCESSDEFINITIONID")]
+        public string ProcessDefinitionId { get; set; }
+        [JsonPropertyName("PRODUCTDEFINITIONID")]
+        public string ProductDefinitionId { get; set; }
+        [JsonPropertyName("PROCESSSEGMENTID")]
         public string Segment { get; set; }
+        [JsonPropertyName("EQUIPMENTID")]
         public string Equitment { get; set; }
+        [JsonPropertyName("WORKORDERID")]
+        public string WorkorderId { get; set; }
+        
+        public string Remark { get; set; }
+        [JsonPropertyName("DESCRIPTION")]
+        public string Description { get; set; }
 
     }
 }
