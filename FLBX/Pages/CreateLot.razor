@@ -395,7 +395,7 @@
         {
 
             Lot newLot = new Lot();
-            newLot.Id = Guid.NewGuid().ToString();
+            newLot.Id = Guid.NewGuid().ToString().Substring(0, 9);
             newLot.Name = newLot.Id.Substring(0, 4) + i.ToString();
             newLot.Qty = qty;
             newLot.WorkorderId = selectedWorkorderId.Trim();
