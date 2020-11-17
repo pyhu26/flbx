@@ -18,8 +18,9 @@
 <FLBX.Components.FxFilterGroup>
 
     <div class="row">
-        <FxDateTimePicker @ref="filterFrom" DateTimeValue="@DateValueFrom" DateFormat="'From : 'yyyy-MM-dd hh:mm:ss"  MediumColSpanValue="3" Placeholder="생산시작일"></FxDateTimePicker>
-        <FxDateTimePicker @ref="filterTo" DateTimeValue="@DateValueTo" DateFormat="'To : 'yyyy-MM-dd hh:mm:ss"  MediumColSpanValue="3" Placeholder="생산종료일"></FxDateTimePicker>
+        <FxDateTimePicker @ref="filterFrom" DateTimeValue="@DateValueFrom" DateFormat="'From : 'yyyy-MM-dd hh:mm:ss" MediumColSpanValue="3" Placeholder="생산시작일" DateTimeChanged="filterDateFrom_ValueChanged"></FxDateTimePicker>
+        <FxDateTimePicker @ref="filterTo" DateTimeValue="@DateValueTo" DateFormat="'To : 'yyyy-MM-dd hh:mm:ss" MediumColSpanValue="3" Placeholder="생산종료일" DateTimeChanged="filterDateTo_ValueChanged"></FxDateTimePicker>
+        <FxDropDown @ref="@filterWorkOrder" DataSourceValue="@Workorders" MediumColSpanValue="3" Placeholder="Work Order"></FxDropDown>
         <FxTextBox @ref="filterLotId" MediumColSpanValue="3" Placeholder="Lot Id검색:"></FxTextBox>
         <FxTextBox @ref="filterLotName" MediumColSpanValue="3" Placeholder="Lot이름검색:"></FxTextBox>
         @*<SfTextBox Placeholder="Lot Id검색" FloatLabelType="@FloatLabelType.Never"  @bind-Value="@LotId"/>
@@ -38,6 +39,8 @@
 </FLBX.Components.FxFilterGroup>
     @*TOP Menu -End- *@
 
+<FxSpinner @ref="@fxSpinner"></FxSpinner>
+<FxDialog @ref="@dlgPop" PopupType="Constants.DialogType.Alert"></FxDialog>
 
     @*Main  Content *@
     <div class="row">
@@ -50,9 +53,9 @@
                             <GridGroupSettings @ref="gridGroup" Columns="@GroupedColumns" ></GridGroupSettings>
                             <GridEvents RowSelected="RowSelectHander" TValue="TempLotModel"></GridEvents>
                             <GridColumns>
-                                <GridColumn Field="LOTID" IsPrimaryKey="true"HeaderText="LOT ID" TextAlign="TextAlign.Left" Width="100"></GridColumn>
-                                <GridColumn Field="WORKORDERID" IsPrimaryKey="true" HeaderText="WORKORDER ID" Width="100"></GridColumn>
-                                <GridColumn Field="PRODUCTDEFINITIONID" HeaderText="PRODUCT ID" Width="80"></GridColumn>
+                                <GridColumn Field="LOTID" IsPrimaryKey="true"HeaderText="LOT ID" TextAlign="TextAlign.Left" Width="100" AutoFit="true"></GridColumn>
+                                <GridColumn Field="WORKORDERID" IsPrimaryKey="true" HeaderText="WORKORDER ID" Width="100" AutoFit="true"></GridColumn>
+                                <GridColumn Field="STATE" HeaderText="State" Width="80"></GridColumn>
                                
                             </GridColumns>
                         </SfGrid>
@@ -61,14 +64,17 @@
                     <ChildContent2>
                         <SfGrid DataSource="@LotHist"  AllowPaging="true" AllowTextWrap="true" AllowResizing="true" AllowReordering="true" AllowFiltering="true">
                             <GridColumns>
-                                <GridColumn Field="LOTID" IsPrimaryKey="true" HeaderText="Lot Id" Width="100"></GridColumn>
-                                <GridColumn Field="LOTNAME" HeaderText="Lot Name" TextAlign="TextAlign.Right" Width="50"></GridColumn>
-                                <GridColumn Field="STATE" HeaderText="State" Width="50"></GridColumn>
-                                <GridColumn Field="QTY" HeaderText="Qty" Width="50"></GridColumn>
-                                <GridColumn Field="PROCESSSEGMENTID" HeaderText="Segment" Width="80"></GridColumn>
-                                <GridColumn Field="MODIFYTIME" HeaderText="Modify Time" Width="80"></GridColumn>
-                                <GridColumn Field="EQUIPMENTID" HeaderText="Equitment Id" Width="80"></GridColumn>
-                                <GridColumn Field="EQUIPMENTNAME" HeaderText="Equitment Name" Width="80"></GridColumn>
+                                <GridColumn Field="LOTID" IsPrimaryKey="true" HeaderText="Lot Id" Width="100" AutoFit="true"></GridColumn>
+                                <GridColumn Field="LOTNAME" HeaderText="Lot Name"  Width="50" AutoFit="true"></GridColumn>
+                                <GridColumn Field="WORKORDERID" HeaderText="Lot Name"  Width="50" AutoFit="true"></GridColumn>
+                                <GridColumn Field="STATE" HeaderText="State" Width="50" AutoFit="true"></GridColumn>
+                                <GridColumn Field="QTY" HeaderText="Qty" Width="50" AutoFit="true"></GridColumn>
+                                <GridColumn Field="PRODUCTDEFINITIONID" HeaderText="Product Id" Width="80" AutoFit="true"></GridColumn>
+                                <GridColumn Field="PROCESSDEFINITIONID" HeaderText="Process Id" Width="80" AutoFit="true"></GridColumn>
+                                <GridColumn Field="PROCESSSEGMENTID" HeaderText="Segment Id" Width="80" AutoFit="true"></GridColumn>
+                                <GridColumn Field="MODIFYTIME" HeaderText="Modify Time" Width="80" AutoFit="true"></GridColumn>
+                                <GridColumn Field="EQUIPMENTID" HeaderText="Equitment Id" Width="80" AutoFit="true"></GridColumn>
+                                <GridColumn Field="EQUIPMENTNAME" HeaderText="Equitment Name" Width="80" AutoFit="true"></GridColumn>
                             </GridColumns>
                         </SfGrid>
                     </ChildContent2>                                             
@@ -83,7 +89,7 @@
 
         GridGroupSettings gridGroup;
 
-        public DateTime? DateValueFrom { get; set; } = DateTime.Now.AddDays(-7);
+        public DateTime? DateValueFrom { get; set; } = DateTime.Now.AddDays(-21);
 
         public DateTime? DateValueTo { get; set; } = DateTime.Now;
 
@@ -92,10 +98,11 @@
         FxTextBox filterLotId;
         FxTextBox filterLotName;
         FxToast toast;
+        FxDialog dlgPop;
+        FxSpinner fxSpinner;
+        FxDropDown filterWorkOrder;
 
-
-
-
+        IEnumerable<DropDownModel> Workorders { get; set; }
         void Attach(RenderHandle renderHandle) { }
         List<TempLotModel> LotList { get; set; } = new List<TempLotModel>();
         List<TempLotHistModel> LotHist { get; set; } = new List<TempLotHistModel>();
@@ -117,6 +124,18 @@
             //GridDataLot = Lot.GetAllRecords();
 
         }
+        void filterDateFrom_ValueChanged(ChangedEventArgs<DateTime?> args)
+        {
+            //  dlgPop.Show("DateTime", args.Value.ToString());
+            DateValueFrom = args.Value;
+
+        }
+        void filterDateTo_ValueChanged(ChangedEventArgs<DateTime?> args)
+        {
+            //  dlgPop.Show("DateTime", args.Value.ToString());
+            DateValueTo = args.Value;
+
+        }
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
 
@@ -129,11 +148,41 @@
                 //this.filterFrom.sfDateTimePicker.Value= DateTime.Now.AddDays(-14);
                 //this.filterTo.sfDateTimePicker.Value = DateTime.Now;
 
+                //Workorder 필터
+                await GetWorkorders();
+                this.filterWorkOrder.sfDropDownList.AddItem(Workorders);
+
                 StateHasChanged();
             }
         }
 
+        private async Task GetWorkorders()
+        {
+            Dictionary<string, object> param = new Dictionary<string, object>();
+            param.Add("from", filterFrom.sfDateTimePicker.Value?.ToString("yyyy-MM-dd hh:mm:ss"));
+            param.Add("to", filterTo.sfDateTimePicker.Value?.ToString("yyyy-MM-dd hh:mm:ss"));
 
+            //Query Message 생성
+            QueryMessage queryMessage = new QueryMessage()
+            {
+                QueryId = "GetWorkOrderDp",
+                QueryType = "Filter",
+                QueryVersion = "001",
+                SiteId = "A_10",
+                ParameterKeyValue = param
+
+            };
+
+            FLMessageSet messageSet = messageService.CreateMessageSet(MeesageType.Query, queryMessage, null, null);
+
+            //Message Send
+            var task = messageService.SendMessageAsync("Product", "/query/executequery", messageSet);
+            await Task.WhenAll(task);
+            ReplyMessage reply = task.Result;
+
+            //Reply Message Binding
+            this.Workorders = JsonSerializer.Deserialize<IEnumerable<DropDownModel>>(Convert.ToString(reply.ResultKeyValues["reply"]));
+        }
 
         public async Task btnQuery_OnClickAsync()
         {
@@ -197,7 +246,7 @@
         {
             public string WORKORDERID { get; set; }
             public string LOTID { get; set; }
-            public string PRODUCTDEFINITIONID { get; set; }
+            public string STATE { get; set; }
 
 
         }
@@ -205,8 +254,11 @@
         {
             public string LOTID { get; set; }
             public string LOTNAME { get; set; }
+            public string WORKORDERID { get; set; }
             public string STATE { get; set; }
             public float? QTY { get; set; }
+            public string PRODUCTDEFINITIONID { get; set; }
+            public string PROCESSDEFINITIONID { get; set; }
             public string PROCESSSEGMENTID { get; set; }
             public DateTime MODIFYTIME { get; set; }
             public string EQUIPMENTID { get; set; }

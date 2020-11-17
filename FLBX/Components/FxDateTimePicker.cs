@@ -34,6 +34,14 @@ namespace FLBX.Components
 
         public string cssClass { get; set; }
 
+        [Parameter]
+        public EventCallback<ChangedEventArgs<DateTime?>> DateTimeChanged { get; set; }
+
+        public async Task ValueChangeHandler(ChangedEventArgs<DateTime?> args)
+        {
+            await DateTimeChanged.InvokeAsync(args);
+        }
+
         protected override void OnParametersSet()
         {
             base.OnParametersSet();
