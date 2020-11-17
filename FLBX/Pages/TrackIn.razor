@@ -21,7 +21,7 @@
 <FLBX.Components.FxFilterGroup>
 
     <div class="row">
-        <FxDateRangePicker @ref="@filterDate" MediumColSpanValue="3" Placeholder="생산시작일(기간)" Onclose="@OncloseDate" OnValueChanged="@OnValueChange"></FxDateRangePicker>
+        <FxDateRangePicker @ref="@filterDate" MediumColSpanValue="3" Placeholder="생산시작일(기간)" ></FxDateRangePicker>
         <FxDropDown @ref="@filterWorkOrder" DataSourceValue="@Workorders" MediumColSpanValue="3" Placeholder="Work Order"></FxDropDown>
         <FxTextBox @ref="@filterLotId" MediumColSpanValue="3" Placeholder="Lot Id 검색 "> </FxTextBox>
         <FxTextBox @ref="@filterLotName" MediumColSpanValue="3" Placeholder="Lot 이름 검색 "> </FxTextBox>
