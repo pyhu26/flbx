@@ -44,9 +44,8 @@
     <div class="row d-flex justify-content-end">
         <div class="p-2" style="padding-right: 0!important;">
             <FLBX.Components.FxFilterButtons>
-                <SfButton IsPrimary="true" OnClick="@GetLotInfo">조회</SfButton>
+                <SfButton IsPrimary="true" OnClick="@GetLotInfoValidation">조회</SfButton>
                 <SfButton CssClass="e-danger" OnClick="@Trackin">작업시작</SfButton>
-                <SfButton CssClass="e-danger" OnClick="@Trackout">작업종료</SfButton>
             </FLBX.Components.FxFilterButtons>
 
             <FxToast @ref="@toast" ToastTitle="Information" ToastTimeOut="3000" ToastContent="@ToastMessage"></FxToast>
@@ -98,8 +97,9 @@
 
                     <GridColumn Field=@nameof(LotModel.PROCESSSEGMENTRULEID ) AutoFit="true" HeaderText="P.S Rule Id" AllowEditing="false"></GridColumn>
                     <GridColumn Field=@nameof(LotModel.PROCESSINGSTATE ) AutoFit="true" HeaderText="P State" AllowEditing="false"></GridColumn>
-                    <GridColumn Field=@nameof(LotModel.TRACKINTIME ) AutoFit="true" HeaderText="TrackIn Time" EditType="EditType.DateTimePickerEdit" AllowEditing="false" ></GridColumn>
-                    <GridColumn Field=@nameof(LotModel.TRACKOUTTIME ) AutoFit="true" HeaderText="TrackOUt Time" EditType="EditType.DateTimePickerEdit" AllowEditing="false"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.TRACKINTIME ) AutoFit="true" HeaderText="TrackIn Time" EditType="EditType.DateTimePickerEdit" AllowEditing="false"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.TRACKOUTTIME ) AutoFit="true" HeaderText="TrackOut Time" EditType="EditType.DateTimePickerEdit" AllowEditing="false"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.CREATETIME ) AutoFit="true" HeaderText="Create Time" EditType="EditType.DateTimePickerEdit" AllowEditing="false"></GridColumn>
                 </GridColumns>
             </SfGrid>
 
@@ -127,6 +127,10 @@
 
     input.e-input, textarea.e-input, .e-input-group, .e-input-group.e-control-wrapper { 
         font-size: 13px;
+    }
+    tr.e-emptyrow {
+        text-align: center;
+        height: 400px;
     }
 </style>
 
@@ -243,6 +247,21 @@
         this.Workorders = JsonSerializer.Deserialize<List<DropDownModel>>(Convert.ToString(reply.ResultKeyValues["reply"]));
     }
 
+    private async Task GetLotInfoValidation(MouseEventArgs arg)
+    {
+
+        var msg = $"Workorder는 필수 입력 값입니다.";
+        if (String.IsNullOrEmpty(filterWorkOrder.Value))
+        {
+            dlgPop.Show("Alert", msg);
+        }
+        else
+        {
+            await this.GetLotInfo(arg);
+        }
+    }
+
+
     /// <summary>
     /// GetLotInfo
     /// </summary>
@@ -252,7 +271,6 @@
     {
         await fxSpinner.Show();
         await Task.Delay(2000);
-
 
         try
         {
@@ -342,35 +360,6 @@
         }
     }
 
-    async Task Trackout(MouseEventArgs arg)
-    {
-        this.Lots = this.LotGrid.SelectedRecords;
-        Console.WriteLine(this.Lots.ToString());
-
-        //Parmeter 생성
-        Dictionary<string, object> param = new Dictionary<string, object>();
-        param.Add("lot", this.Lots);
-
-        RuleMessage ruleMessage = new RuleMessage()
-        {
-            RuleName = "TrackOut",
-            ParmeterKeyValues = param
-        };
-
-        FLMessageSet messageSet = messageService.CreateMessageSet(MeesageType.Query, null, ruleMessage, null);
-
-        //Message Send
-        var task = messageService.SendMessageAsync("Product", "/api/TrackOut/TrackOut", messageSet);
-        await Task.WhenAll(task);
-        ReplyMessage reply = task.Result;
-
-        //Reply Message Binding
-        string replyMessage = Convert.ToString(reply.ResultKeyValues["reply"]);
-
-        this.ToastMessage = $"TrackOut Lot : {replyMessage} ea";
-        await toast.fxToast.Show();
-    }
-
     public void ToolbarClick(Syncfusion.Blazor.Navigations.ClickEventArgs args)
     {
         if (args.Item.Id == "Grid_pdfexport")
@@ -408,6 +397,7 @@
         public string MAINPROCESSDEFINITIONID { get; set; }
         public DateTime? TRACKINTIME { get; set; }
         public DateTime? TRACKOUTTIME { get; set; }
+        public DateTime? CREATETIME { get; set; }
 
     }
 }
