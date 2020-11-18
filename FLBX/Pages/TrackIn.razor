@@ -9,6 +9,7 @@
 @using Syncfusion.Blazor.Buttons
 @using Syncfusion.Blazor.Calendars
 @using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Data
 @using Syncfusion.Blazor.Cards
 @using Syncfusion.Blazor.Layouts
 
@@ -25,12 +26,23 @@
         <FxDateRangePicker @ref="@filterDate" StartDate="@StartDate" EndDate="@EndDate"
                            MediumColSpanValue="3" Placeholder="생산시작일(기간)"
                            IsMandantory="true" DateTimeChanged="filterDate_ValueChanged"></FxDateRangePicker>
-        <FxDropDown @ref="@filterWorkOrder" DataSourceValue="@Workorders" MediumColSpanValue="3" Placeholder="Work Order"></FxDropDown>
+        <div class="col-sm-0 col-md-3 col-lg-0">
+            <SfDropDownList @ref="@filterWorkOrder"
+                            DataSource="@Workorders"
+                            Placeholder="Work Order"
+                            TItem="DropDownModel"
+                            TValue="string"
+                            PopupHeight="500px"
+                            AllowFiltering="true">
+                <DropDownListFieldSettings Text="Name" Value="Id"></DropDownListFieldSettings>
+                <DropDownListEvents TValue="string" TItem="DropDownModel" Filtering="OnFilter"></DropDownListEvents>
+            </SfDropDownList>
+        </div>
         <FxTextBox @ref="@filterLotId" MediumColSpanValue="3" Placeholder="Lot Id 검색 "> </FxTextBox>
         <FxTextBox @ref="@filterLotName" MediumColSpanValue="3" Placeholder="Lot 이름 검색 "> </FxTextBox>
     </div>
     <div class="row d-flex justify-content-end">
-        <div class="p-2">
+        <div class="p-2" style="padding-right: 0!important;">
             <FLBX.Components.FxFilterButtons>
                 <SfButton IsPrimary="true" OnClick="@GetLotInfo">조회</SfButton>
                 <SfButton CssClass="e-danger" OnClick="@Trackin">작업시작</SfButton>
@@ -48,42 +60,75 @@
 <FxDialog @ref="@dlgPop" PopupType="Constants.DialogType.Alert"></FxDialog>
 
 @*Main  Content *@
+@* Grid Line Option :::: GridLines="GridLine.Both"*@
 <div class="row">
     <div class="col-lg-12 px-0">
-        <div class="card shadow mb-4 p-3" style="height: 615px;">
+        <div class="card shadow mb-4 p-3" style="height: 637px;">
             <div class="font-weight-bold text-info mb-1"><i class="fas fa fa-bars pr-1"></i>생산Lot</div>
-            <SfGrid ID="Grid" @ref="LotGrid" DataSource="@GridDataLot" Toolbar="@(new List<string>() { "Edit", "Update", "Cancel","Search","Print","ExcelExport" })" AllowPaging="true" AllowExcelExport="true" AllowGrouping="true">
+            <SfGrid ID="Grid"
+                    @ref="LotGrid"
+                    DataSource="@GridDataLot"
+                    Toolbar="@(new List<string>() { "Edit", "Update", "Cancel","Search","Print","ExcelExport" })"
+                    AllowPaging="true"
+                    AllowExcelExport="true"
+                    AllowGrouping="true"
+                    AllowResizing="true"
+                    RowHeight="30"
+                    Height="402">
                 <GridGroupSettings @ref="gridGroup" Columns="@GroupedColumns"></GridGroupSettings>
                 <GridSelectionSettings CheckboxOnly="true" PersistSelection="true"></GridSelectionSettings>
                 <GridEvents OnToolbarClick="ToolbarClick" TValue="LotModel"></GridEvents>
                 <GridEditSettings ShowDeleteConfirmDialog="true" AllowEditing="true" AllowNextRowEdit="true" AllowEditOnDblClick="false" Mode="EditMode.Normal"></GridEditSettings>
                 <GridColumns>
                     <GridColumn Type="ColumnType.CheckBox" AutoFit="true"></GridColumn>
-                    <GridColumn Field=@nameof(LotModel.WORKORDERID ) AutoFit="true" HeaderText="Workorder Id" EditorSettings="new StringEditCellParams{Params = new TextBoxModel() { Readonly = true }}"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.WORKORDERID ) AutoFit="true" HeaderText="Workorder Id" AllowEditing="false"></GridColumn>
                     <GridColumn Field=@nameof(LotModel.LOTID ) AutoFit="true" HeaderText="Lot Id" IsPrimaryKey="true"></GridColumn>
-                    <GridColumn Field=@nameof(LotModel.LOTNAME ) AutoFit="true" HeaderText="Lot Name"></GridColumn>
-                    <GridColumn Field=@nameof(LotModel.STATE ) AutoFit="true" HeaderText="State" EditType="EditType.DropDownEdit" EditorSettings="new StringEditCellParams{Params = new TextBoxModel() { Readonly = true }}">
+                    <GridColumn Field=@nameof(LotModel.LOTNAME ) AutoFit="true" HeaderText="Lot Name" AllowEditing="false"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.STATE ) AutoFit="true" HeaderText="State" EditType="EditType.DropDownEdit" AllowEditing="false">
                         <EditTemplate>
                             <SfDropDownList ID="Segment" @bind-Value="@((context as LotModel).STATE)" Placeholder="Lot state.." TItem="LotModel" TValue="string" DataSource="@stateData">
                                 <DropDownListFieldSettings Value="STATE" Text="STATE"></DropDownListFieldSettings>
                             </SfDropDownList>
                         </EditTemplate>
                     </GridColumn>
-                    <GridColumn Field=@nameof(LotModel.QTY ) AutoFit="true" HeaderText="Qty" TextAlign="TextAlign.Right" ValidationRules="@(new ValidationRules{ Required= true })"></GridColumn>
-                    <GridColumn Field=@nameof(LotModel.PRODUCTDEFINITIONID ) AutoFit="true" HeaderText="Product Id" ValidationRules="@(new ValidationRules{ Required= true })"></GridColumn>
-                    <GridColumn Field=@nameof(LotModel.PROCESSDEFINITIONID ) AutoFit="true" HeaderText="Process Id" ValidationRules="@(new ValidationRules{ Required= true })"></GridColumn>
-                    <GridColumn Field=@nameof(LotModel.PROCESSSEGMENTID ) AutoFit="true" HeaderText="Segment Id" ValidationRules="@(new ValidationRules{ Required= true })"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.QTY ) AutoFit="true" HeaderText="Qty" TextAlign="TextAlign.Right" AllowEditing="false"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.PRODUCTDEFINITIONID ) AutoFit="true" HeaderText="Product Id" AllowEditing="false"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.PROCESSDEFINITIONID ) AutoFit="true" HeaderText="Process Id" AllowEditing="false"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.PROCESSSEGMENTID ) AutoFit="true" HeaderText="Segment Id" AllowEditing="false"></GridColumn>
 
-                    <GridColumn Field=@nameof(LotModel.PROCESSSEGMENTRULEID ) AutoFit="true" HeaderText="P.S Rule Id" EditorSettings="new StringEditCellParams{Params = new TextBoxModel() { Readonly = true }}"></GridColumn>
-                    <GridColumn Field=@nameof(LotModel.PROCESSINGSTATE ) AutoFit="true" HeaderText="P State" EditorSettings="new StringEditCellParams{Params = new TextBoxModel() { Readonly = true }}"></GridColumn>
-                    <GridColumn Field=@nameof(LotModel.TRACKINTIME ) AutoFit="true" HeaderText="TrackIn Time" EditorSettings="new StringEditCellParams{Params = new TextBoxModel() { Readonly = true }}"></GridColumn>
-                    <GridColumn Field=@nameof(LotModel.TRACKOUTTIME ) AutoFit="true" HeaderText="TrackOUt Time" EditorSettings="new StringEditCellParams{Params = new TextBoxModel() { Readonly = true }}"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.PROCESSSEGMENTRULEID ) AutoFit="true" HeaderText="P.S Rule Id" AllowEditing="false"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.PROCESSINGSTATE ) AutoFit="true" HeaderText="P State" AllowEditing="false"></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.TRACKINTIME ) AutoFit="true" HeaderText="TrackIn Time" EditType="EditType.DateTimePickerEdit" AllowEditing="false" ></GridColumn>
+                    <GridColumn Field=@nameof(LotModel.TRACKOUTTIME ) AutoFit="true" HeaderText="TrackOUt Time" EditType="EditType.DateTimePickerEdit" AllowEditing="false"></GridColumn>
                 </GridColumns>
             </SfGrid>
 
         </div>
     </div>
 </div>
+
+<style>
+    .e-grid .e-headercelldiv {
+        font-size: 12px;
+    }
+
+    .e-grid .e-rowcell {
+        font-size: 12px;
+        border-width: 1px 1px 1px 0
+    }
+
+    .e-grid .e-altrow {
+        background-color: #fafafa;
+    }
+
+    .e-btn, .e-css.e-btn {
+        font-size: 13px;
+    }
+
+    input.e-input, textarea.e-input, .e-input-group, .e-input-group.e-control-wrapper { 
+        font-size: 13px;
+    }
+</style>
 
 @*Main  Content End *@
 
@@ -92,7 +137,7 @@
     #region Components
 
     FxDateRangePicker filterDate;
-    FxDropDown filterWorkOrder;
+    SfDropDownList<string, DropDownModel> filterWorkOrder;
     FxTextBox filterLotId;
     FxTextBox filterLotName;
     FxToast toast;
@@ -110,7 +155,7 @@
 
     public string[] GroupedColumns = new string[] { "WORKORDERID" };
 
-    IEnumerable<DropDownModel> Workorders { get; set; }
+    List<DropDownModel> Workorders { get; set; } = new List<DropDownModel>();
     IEnumerable<DropDownModel> State { get; set; }
 
     List<LotModel> Lots { get; set; }
@@ -142,22 +187,36 @@
         {
             //Workorder 필터
             await GetWorkorders();
-            this.filterWorkOrder.sfDropDownList.AddItem(Workorders);
+            //this.filterWorkOrder.sfDropDownList.Clear();
+            //this.filterWorkOrder.sfDropDownList.AddItem(Workorders);
         }
     }
 
-    public List<LotModel> GridDataLot { get; set; }
+    public List<LotModel> GridDataLot { get; set; } = new List<LotModel>();
     private bool isChecked = true;
 
     private async Task filterDate_ValueChanged(RangeEventArgs args)
     {
         //dlgPop.Show("Date", args.StartDate + " / " + args.EndDate);
         await GetWorkorders();
-        await this.filterWorkOrder.sfDropDownList.AddItem(Workorders);
+        //this.filterWorkOrder.sfDropDownList.Clear();
+        await this.filterWorkOrder.AddItem(Workorders);
+    }
+
+    private async Task OnFilter(FilteringEventArgs args)
+    {
+        args.PreventDefaultAction = true;
+        var query = new Query().Where(new WhereFilter() { Field = "Id", Operator = "contains", value = args.Text, IgnoreCase = true });
+
+        query = !string.IsNullOrEmpty(args.Text) ? query : new Query();
+
+        await filterWorkOrder.Filter(Workorders, query);
     }
 
     private async Task GetWorkorders()
     {
+        this.Workorders.Clear();
+
         Dictionary<string, object> param = new Dictionary<string, object>();
         param.Add("from", filterDate.sfDateRangePicker.StartDate.Value.ToString("yyyy-MM-dd"));
         param.Add("to", filterDate.sfDateRangePicker.EndDate.Value.ToString("yyyy-MM-dd"));
@@ -181,7 +240,7 @@
         ReplyMessage reply = task.Result;
 
         //Reply Message Binding
-        this.Workorders = JsonSerializer.Deserialize<IEnumerable<DropDownModel>>(Convert.ToString(reply.ResultKeyValues["reply"]));
+        this.Workorders = JsonSerializer.Deserialize<List<DropDownModel>>(Convert.ToString(reply.ResultKeyValues["reply"]));
     }
 
     /// <summary>
@@ -194,12 +253,16 @@
         await fxSpinner.Show();
         await Task.Delay(2000);
 
+
         try
         {
+
+            //Grid data Clear
+            this.GridDataLot.Clear();
             //Parmeter 생성
             Dictionary<string, object> param = new Dictionary<string, object>();
             //param.Add("workorder", filterWorkOrder.sfDropDownList.Value);
-            param.Add("workorder", filterWorkOrder.sfDropDownList.GetItems().FirstOrDefault<DropDownModel>().Id);
+            param.Add("workorder", filterWorkOrder.Value);
             param.Add("lotid", filterLotId.fxTextBox.Value ?? "");
             param.Add("lotname", filterLotName.fxTextBox.Value ?? "");
 
@@ -263,7 +326,7 @@
 
             //Reply Message Binding
             string replyMessage = Convert.ToString(reply.ResultKeyValues["reply"]);
-            var msg = $"TrackIn Lot : {replyMessage} ea";
+            var msg = $"TrackIn Lot : ({Convert.ToInt32(replyMessage) / 2}) ea";
 
             //await fxSpinner.Show();
             dlgPop.Show("Information", msg);
