@@ -99,24 +99,6 @@
     @code {
 
         public string workorderid;
-
-        //        public class Countries
-        //        {
-        //            public string Name { get; set; }
-
-        //            public string Code { get; set; }
-        //        }
-
-        //        List<Countries> Country = new List<Countries>
-        //{
-        //        new Countries() { Name = "Australia", Code = "AU" },
-        //        new Countries() { Name = "Bermuda", Code = "BM" },
-        //        new Countries() { Name = "Canada", Code = "CA" },
-        //        new Countries() { Name = "Cameroon", Code = "CM" },
-        //    };
-
-
-
         GridGroupSettings gridGroup;
 
         public DateTime? DateValueFrom { get; set; } = DateTime.Now.AddDays(-21);
@@ -213,11 +195,19 @@
             Dictionary<string, object> param = new Dictionary<string, object>();
             var from = filterFrom.sfDateTimePicker.Value?.ToString("yyyy-MM-dd hh:mm:ss");
             var to = filterTo.sfDateTimePicker.Value?.ToString("yyyy-MM-dd hh:mm:ss");
-
+            var msg = $"날짜입력필수입니다.";
             if (String.IsNullOrEmpty(from))
-                from = " ";
+            {
+                dlgPop.Show("Information", msg);
+                return;
+            }
+
             if (String.IsNullOrEmpty(to))
-                to = "  ";
+            {
+                dlgPop.Show("Information", msg);
+                return;
+            }
+
             param.Add("from", from);
             param.Add("to", to);
 
