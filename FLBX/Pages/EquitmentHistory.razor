@@ -61,10 +61,10 @@
                         <TreeGridEvents TValue="TempEquitmentModel"  RowSelected="RowSelectedHandler" ></TreeGridEvents>
                         
                         <TreeGridColumns>
-                            <TreeGridColumn Field="EQUIPMENTID" HeaderText=" Equitment ID" Width="80" TextAlign="TextAlign.Left"></TreeGridColumn>
-                            <TreeGridColumn Field="EQUIPMENTNAME" HeaderText="Equitment Name" Width="145"></TreeGridColumn>
-                            <TreeGridColumn Field="STATE" HeaderText="State" Width="88" TextAlign="TextAlign.Center"></TreeGridColumn>
-                            <TreeGridColumn Field="PARENTID" HeaderText=" Parent Id" Width="88" TextAlign="TextAlign.Center"></TreeGridColumn>
+                            <TreeGridColumn Field="EQUIPMENTID" HeaderText=" Equitment ID" Width="100" TextAlign="TextAlign.Left"></TreeGridColumn>
+                            <TreeGridColumn Field="EQUIPMENTNAME" HeaderText="Equitment Name" Width="130"></TreeGridColumn>
+                            <TreeGridColumn Field="STATE" HeaderText="State" Width="80" TextAlign="TextAlign.Center"></TreeGridColumn>
+                            <TreeGridColumn Field="PARENTID" HeaderText=" Parent Id" Width="80" TextAlign="TextAlign.Center"></TreeGridColumn>
                         </TreeGridColumns>
                     </SfTreeGrid>
 
@@ -73,12 +73,12 @@
                 <ChildContent2>
                     <SfGrid DataSource="@EquitmentHist" AllowPaging="true" AllowTextWrap="true" AllowResizing="true" AllowReordering="true" AllowFiltering="true">
                         <GridColumns>
-                            <GridColumn Field="EQUIPMENTID" HeaderText="Equitment Id" Width="80"></GridColumn>
-                            <GridColumn Field="EQUIPMENTName" HeaderText="Equitment Name" Width="80"></GridColumn>
-                            <GridColumn Field="STATE" HeaderText="State" Width="50"></GridColumn>
-                            <GridColumn Field="ACTIVITY" HeaderText="Qty" Width="50"></GridColumn>
-                            <GridColumn Field="CUSTOMACTIVITY" HeaderText="Segment" Width="80"></GridColumn>
-                            <GridColumn Field="TID" HeaderText="Modify Time" Width="80"></GridColumn>
+                            <GridColumn Field="EQUIPMENTID" HeaderText="Equitment Id" Width="80"  AutoFit="true"></GridColumn>
+                            <GridColumn Field="EQUIPMENTName" HeaderText="Equitment Name" Width="80"  AutoFit="true"></GridColumn>
+                            <GridColumn Field="STATE" HeaderText="State" Width="50"  AutoFit="true"></GridColumn>
+                            <GridColumn Field="ACTIVITY" HeaderText="Qty" Width="50"  AutoFit="true"></GridColumn>
+                            <GridColumn Field="CUSTOMACTIVITY" HeaderText="Segment" Width="80" AutoFit="true"></GridColumn>
+                            <GridColumn Field="TID" HeaderText="Modify Time" Width="80"  AutoFit="true"></GridColumn>
 
                         </GridColumns>
                     </SfGrid>
