@@ -1,10 +1,10 @@
 ﻿@inject MenuService menuService
 
-<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar" style="width: 10rem !important;">
 
     <!-- Sidebar - Brand -->
-    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/">
-        <div class="sidebar-brand-text mx-3">#FLBX</div>
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/" style="height:3rem;">
+        <div class="sidebar-brand-text mx-3" >#FLBX</div>
     </a>
 
     <!-- Divider -->
@@ -36,7 +36,7 @@
                 </a>
 
                 <div id="@menu1st.Id" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
+                    <div class="bg-white py-2 collapse-inner rounded" style="min-width: 8rem;">
                         <!--level2 menu-->
                         @foreach (var menu2nd in this.Menus2nd.Where(r => r.Parent.Equals(menu1st.Id)))
                         {
@@ -44,7 +44,7 @@
                             <!--level3 menu-->
                             @foreach (var menu3rd in this.Menus3rd.Where(r => r.Parent.Equals(menu2nd.Id)))
                             {
-                                <a class="collapse-item" href="FxTabs/@menu3rd.Id">@menu3rd.Name</a>
+                                <a class="collapse-item" style="font-size: 0.8rem;" href="FxTabs/@menu3rd.Id">@menu3rd.Name</a>
                             }
                         }
                     </div>
@@ -56,14 +56,16 @@
     <!-- Divider -->
     <hr class="sidebar-divider d-none d-md-block">
 
-    <!-- Sidebar Toggler (Sidebar) -->
+    <!-- Sidebar Toggler (Sidebar)
     <div class="text-center d-none d-md-inline">
         <button class="rounded-circle border-0" id="sidebarToggle"></button>
     </div>
+    -->
 
 </ul>
 
 @code {
+
     private bool collapseNavMenu = true;
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
