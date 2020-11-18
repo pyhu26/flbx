@@ -159,12 +159,15 @@
             Workorders.Clear();
             LotList.Clear();
             LotHist.Clear();
-            await GetWorkorders();
+            // await GetWorkorders();
         }
         async Task filterDateFrom_ValueChanged(ChangedEventArgs<DateTime?> args)
         {
             //  dlgPop.Show("DateTime", args.Value.ToString());
             DateValueFrom = args.Value;
+            var msg = $"날짜입력필수입니다.";
+            if (String.IsNullOrEmpty(DateValueFrom.ToString()))
+                dlgPop.Show("Information", msg);
             await GetWorkorders();
 
 
@@ -175,6 +178,9 @@
         {
             //  dlgPop.Show("DateTime", args.Value.ToString());
             DateValueTo = args.Value;
+            var msg = $"날짜입력필수입니다.";
+            if (String.IsNullOrEmpty(DateValueTo.ToString()))
+                dlgPop.Show("Information", msg);
             await GetWorkorders();
 
 
@@ -204,19 +210,11 @@
             Dictionary<string, object> param = new Dictionary<string, object>();
             var from = filterFrom.sfDateTimePicker.Value?.ToString("yyyy-MM-dd hh:mm:ss");
             var to = filterTo.sfDateTimePicker.Value?.ToString("yyyy-MM-dd hh:mm:ss");
-            var msg = $"날짜입력필수입니다.";
-            if (String.IsNullOrEmpty(from))
-            {
-                dlgPop.Show("Information", msg);
-                from = " ";
-            }
-
-            if (String.IsNullOrEmpty(to))
-            {
-                dlgPop.Show("Information", msg);
-                to = "  ";
-            }
-            
+         
+            if (String.IsNullOrEmpty(from))                         
+                from = " ";          
+            if (String.IsNullOrEmpty(to))            
+                to = "  ";          
             param.Add("from", from);
             param.Add("to", to);
 
