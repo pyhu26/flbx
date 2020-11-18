@@ -204,10 +204,19 @@
             Dictionary<string, object> param = new Dictionary<string, object>();
             var from = filterFrom.sfDateTimePicker.Value?.ToString("yyyy-MM-dd hh:mm:ss");
             var to = filterTo.sfDateTimePicker.Value?.ToString("yyyy-MM-dd hh:mm:ss");
+            var msg = $"날짜입력필수입니다.";
             if (String.IsNullOrEmpty(from))
+            {
+                dlgPop.Show("Information", msg);
                 from = " ";
+            }
+
             if (String.IsNullOrEmpty(to))
-                to = " ";
+            {
+                dlgPop.Show("Information", msg);
+                to = "  ";
+            }
+            
             param.Add("from", from);
             param.Add("to", to);
 
