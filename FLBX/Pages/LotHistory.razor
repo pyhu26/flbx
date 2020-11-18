@@ -20,21 +20,29 @@
     <div class="row">
         <FxDateTimePicker @ref="filterFrom" DateTimeValue="@DateValueFrom" DateFormat="'From : 'yyyy-MM-dd hh:mm:ss" MediumColSpanValue="3" Placeholder="생산시작일" DateTimeChanged="filterDateFrom_ValueChanged"></FxDateTimePicker>
         <FxDateTimePicker @ref="filterTo" DateTimeValue="@DateValueTo" DateFormat="'To : 'yyyy-MM-dd hh:mm:ss" MediumColSpanValue="3" Placeholder="생산종료일" DateTimeChanged="filterDateTo_ValueChanged"></FxDateTimePicker>
-        <FxDropDown @ref="@filterWorkOrder" DataSourceValue="@Workorders" MediumColSpanValue="3" Placeholder="Work Order"></FxDropDown>
-        <FxTextBox @ref="filterLotId" MediumColSpanValue="3" Placeholder="Lot Id검색:"></FxTextBox>
-        <FxTextBox @ref="filterLotName" MediumColSpanValue="3" Placeholder="Lot이름검색:"></FxTextBox>
-        @*<SfTextBox Placeholder="Lot Id검색" FloatLabelType="@FloatLabelType.Never"  @bind-Value="@LotId"/>
-        <SfTextBox Placeholder="Lot 이름검색" FloatLabelType="@FloatLabelType.Never" @bind-Value="@LotName"/>*@
+        @*<FxDropDown @ref="@filterWorkOrder" DataSourceValue="@Workorders" MediumColSpanValue="3" Placeholder="Work Order"></FxDropDown>*@
+    <div class="col-md-3">
+        <SfDropDownList @ref="sfdrop" TValue="string" Placeholder="Work Order" TItem="DropDownModel" @bind-Value="@workorderid" DataSource="@Workorders">
+            <DropDownListFieldSettings Value="Id"></DropDownListFieldSettings>
+        </SfDropDownList>
+        @*<SfDropDownList TValue="string" Placeholder="e.g. Australia" TItem="Countries" @bind-Value="@DropVal" DataSource="@Country">
+            <DropDownListFieldSettings Value="Name"></DropDownListFieldSettings>
+        </SfDropDownList>*@
     </div>
-
-    <div class="row d-flex justify-content-end">
-        <div class="p-2">
-            <FLBX.Components.FxFilterButtons>
-                <SfButton @ref="btnQuery" OnClick="@btnQuery_OnClickAsync" IsPrimary="true">조회</SfButton>
-            </FLBX.Components.FxFilterButtons>
-            <FxToast @ref="@toast" ToastTitle="Information" ToastTimeOut="3000" ToastContent="@ToastMessage"></FxToast>
+            <FxTextBox @ref="filterLotId" MediumColSpanValue="3" Placeholder="Lot Id검색:"></FxTextBox>
+            <FxTextBox @ref="filterLotName" MediumColSpanValue="3" Placeholder="Lot이름검색:"></FxTextBox>
+            @*<SfTextBox Placeholder="Lot Id검색" FloatLabelType="@FloatLabelType.Never"  @bind-Value="@LotId"/>
+            <SfTextBox Placeholder="Lot 이름검색" FloatLabelType="@FloatLabelType.Never" @bind-Value="@LotName"/>*@
         </div>
-    </div>
+
+        <div class="row d-flex justify-content-end">
+            <div class="p-2">
+                <FLBX.Components.FxFilterButtons>
+                    <SfButton @ref="btnQuery" OnClick="@btnQuery_OnClickAsync" IsPrimary="true">조회</SfButton>
+                </FLBX.Components.FxFilterButtons>
+                <FxToast @ref="@toast" ToastTitle="Information" ToastTimeOut="3000" ToastContent="@ToastMessage"></FxToast>
+            </div>
+        </div>
 
 </FLBX.Components.FxFilterGroup>
     @*TOP Menu -End- *@
@@ -87,12 +95,31 @@
 
     @code {
 
+        public string workorderid;
+
+        //        public class Countries
+        //        {
+        //            public string Name { get; set; }
+
+        //            public string Code { get; set; }
+        //        }
+
+        //        List<Countries> Country = new List<Countries>
+        //{
+        //        new Countries() { Name = "Australia", Code = "AU" },
+        //        new Countries() { Name = "Bermuda", Code = "BM" },
+        //        new Countries() { Name = "Canada", Code = "CA" },
+        //        new Countries() { Name = "Cameroon", Code = "CM" },
+        //    };
+
+
+
         GridGroupSettings gridGroup;
 
         public DateTime? DateValueFrom { get; set; } = DateTime.Now.AddDays(-21);
 
         public DateTime? DateValueTo { get; set; } = DateTime.Now;
-
+        SfDropDownList<string,DropDownModel> sfdrop;
         FxDateTimePicker filterFrom;
         FxDateTimePicker filterTo;
         FxTextBox filterLotId;
@@ -102,7 +129,7 @@
         FxSpinner fxSpinner;
         FxDropDown filterWorkOrder;
 
-        IEnumerable<DropDownModel> Workorders { get; set; }
+        List<DropDownModel> Workorders { get; set; } = new List<DropDownModel>();
         void Attach(RenderHandle renderHandle) { }
         List<TempLotModel> LotList { get; set; } = new List<TempLotModel>();
         List<TempLotHistModel> LotHist { get; set; } = new List<TempLotHistModel>();
@@ -118,6 +145,8 @@
         [Parameter]
         public string LotName { get; set; } = "";
         public string ToastMessage { get; set; }
+
+
         protected override void OnInitialized()
         {
             //GridData = WorkOrderDetails.GetAllRecords();
@@ -128,12 +157,20 @@
         {
             //  dlgPop.Show("DateTime", args.Value.ToString());
             DateValueFrom = args.Value;
+            GetWorkorders();
+            //this.filterWorkOrder.sfDropDownList.AddItem(Workorders);
+ 
+            sfdrop.AddItem(Workorders);
 
         }
         void filterDateTo_ValueChanged(ChangedEventArgs<DateTime?> args)
         {
             //  dlgPop.Show("DateTime", args.Value.ToString());
             DateValueTo = args.Value;
+            GetWorkorders();
+            //this.filterWorkOrder.sfDropDownList.AddItem(Workorders);
+
+            sfdrop.AddItem(Workorders);
 
         }
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -150,8 +187,8 @@
 
                 //Workorder 필터
                 await GetWorkorders();
-                this.filterWorkOrder.sfDropDownList.AddItem(Workorders);
-
+                //this.filterWorkOrder.sfDropDownList.AddItem(Workorders);
+                sfdrop.AddItem(Workorders);
                 StateHasChanged();
             }
         }
@@ -181,7 +218,7 @@
             ReplyMessage reply = task.Result;
 
             //Reply Message Binding
-            this.Workorders = JsonSerializer.Deserialize<IEnumerable<DropDownModel>>(Convert.ToString(reply.ResultKeyValues["reply"]));
+            this.Workorders = JsonSerializer.Deserialize<List<DropDownModel>>(Convert.ToString(reply.ResultKeyValues["reply"]));
         }
 
         public async Task btnQuery_OnClickAsync()
@@ -198,6 +235,7 @@
             if (String.IsNullOrEmpty(lotname))
                 lotname = " ";
             param.Add("lotname", lotname);
+            param.Add("workorderid", workorderid);
             //Query Message 생성
             QueryMessage queryMeasage = new QueryMessage()
             {
