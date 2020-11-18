@@ -29,8 +29,8 @@
             <DropDownListFieldSettings Value="Name"></DropDownListFieldSettings>
         </SfDropDownList>*@
     </div>
-            <FxTextBox @ref="filterLotId" MediumColSpanValue="3" Placeholder="Lot Id검색:"></FxTextBox>
-            <FxTextBox @ref="filterLotName" MediumColSpanValue="3" Placeholder="Lot이름검색:"></FxTextBox>
+            <FxTextBox @ref="filterLotId" MediumColSpanValue="2" Placeholder="Lot Id검색:"></FxTextBox>
+            <FxTextBox @ref="filterLotName" MediumColSpanValue="1" Placeholder="Lot이름검색:"></FxTextBox>
             @*<SfTextBox Placeholder="Lot Id검색" FloatLabelType="@FloatLabelType.Never"  @bind-Value="@LotId"/>
             <SfTextBox Placeholder="Lot 이름검색" FloatLabelType="@FloatLabelType.Never" @bind-Value="@LotName"/>*@
         </div>
@@ -61,8 +61,8 @@
                             <GridGroupSettings @ref="gridGroup" Columns="@GroupedColumns" ></GridGroupSettings>
                             <GridEvents RowSelected="RowSelectHander" TValue="TempLotModel"></GridEvents>
                             <GridColumns>
-                                <GridColumn Field="LOTID" IsPrimaryKey="true"HeaderText="LOT ID" TextAlign="TextAlign.Left" Width="100" AutoFit="true"></GridColumn>
-                                <GridColumn Field="WORKORDERID" IsPrimaryKey="true" HeaderText="WORKORDER ID" Width="100" AutoFit="true"></GridColumn>
+                                <GridColumn Field="LOTID" IsPrimaryKey="true"HeaderText="LOT ID" TextAlign="TextAlign.Left" Width="200" ></GridColumn>
+                                <GridColumn Field="WORKORDERID" IsPrimaryKey="true" HeaderText="WORKORDER ID" Width="100" ></GridColumn>
                                 <GridColumn Field="STATE" HeaderText="State" Width="80"></GridColumn>
                                
                             </GridColumns>
@@ -73,14 +73,17 @@
                         <SfGrid DataSource="@LotHist"  AllowPaging="true" AllowTextWrap="true" AllowResizing="true" AllowReordering="true" AllowFiltering="true">
                             <GridColumns>
                                 <GridColumn Field="LOTID" IsPrimaryKey="true" HeaderText="Lot Id" Width="100" AutoFit="true"></GridColumn>
-                                <GridColumn Field="LOTNAME" HeaderText="Lot Name"  Width="50" AutoFit="true"></GridColumn>
-                                <GridColumn Field="WORKORDERID" HeaderText="Lot Name"  Width="50" AutoFit="true"></GridColumn>
+                                <GridColumn Field="LOTNAME" HeaderText="Lot Name" Width="50" AutoFit="true"></GridColumn>
+                                <GridColumn Field="WORKORDERID" HeaderText="WorkOrder Id" Width="50" AutoFit="true"></GridColumn>
                                 <GridColumn Field="STATE" HeaderText="State" Width="50" AutoFit="true"></GridColumn>
                                 <GridColumn Field="QTY" HeaderText="Qty" Width="50" AutoFit="true"></GridColumn>
                                 <GridColumn Field="PRODUCTDEFINITIONID" HeaderText="Product Id" Width="80" AutoFit="true"></GridColumn>
                                 <GridColumn Field="PROCESSDEFINITIONID" HeaderText="Process Id" Width="80" AutoFit="true"></GridColumn>
                                 <GridColumn Field="PROCESSSEGMENTID" HeaderText="Segment Id" Width="80" AutoFit="true"></GridColumn>
-                                <GridColumn Field="MODIFYTIME" HeaderText="Modify Time" Width="80" AutoFit="true"></GridColumn>
+                                <GridColumn Field="PROCESSSEGMENTRULEID" HeaderText="P.S Rule Id" Width="80" AutoFit="true"></GridColumn>
+                                <GridColumn Field="PROCESSINGSTATE" HeaderText="P State" Width="80" AutoFit="true"></GridColumn>
+                                <GridColumn Field="TRACKINTIME" HeaderText="TrackIn Time" Width="80" AutoFit="true"></GridColumn>
+                                <GridColumn Field="TRACKOUTTIME" HeaderText="TrackOut Time" Width="80" AutoFit="true"></GridColumn>
                                 <GridColumn Field="EQUIPMENTID" HeaderText="Equitment Id" Width="80" AutoFit="true"></GridColumn>
                                 <GridColumn Field="EQUIPMENTNAME" HeaderText="Equitment Name" Width="80" AutoFit="true"></GridColumn>
                             </GridColumns>
@@ -96,24 +99,6 @@
     @code {
 
         public string workorderid;
-
-        //        public class Countries
-        //        {
-        //            public string Name { get; set; }
-
-        //            public string Code { get; set; }
-        //        }
-
-        //        List<Countries> Country = new List<Countries>
-        //{
-        //        new Countries() { Name = "Australia", Code = "AU" },
-        //        new Countries() { Name = "Bermuda", Code = "BM" },
-        //        new Countries() { Name = "Canada", Code = "CA" },
-        //        new Countries() { Name = "Cameroon", Code = "CM" },
-        //    };
-
-
-
         GridGroupSettings gridGroup;
 
         public DateTime? DateValueFrom { get; set; } = DateTime.Now.AddDays(-21);
@@ -165,9 +150,9 @@
         {
             //  dlgPop.Show("DateTime", args.Value.ToString());
             DateValueFrom = args.Value;
-            var msg = $"날짜입력필수입니다.";
-            if (String.IsNullOrEmpty(DateValueFrom.ToString()))
-                dlgPop.Show("Information", msg);
+            //var msg = $"날짜입력필수입니다.";
+            //if (String.IsNullOrEmpty(DateValueFrom.ToString()))
+            //    dlgPop.Show("Information", msg);
             await GetWorkorders();
 
 
@@ -178,9 +163,9 @@
         {
             //  dlgPop.Show("DateTime", args.Value.ToString());
             DateValueTo = args.Value;
-            var msg = $"날짜입력필수입니다.";
-            if (String.IsNullOrEmpty(DateValueTo.ToString()))
-                dlgPop.Show("Information", msg);
+            //var msg = $"날짜입력필수입니다.";
+            //if (String.IsNullOrEmpty(DateValueTo.ToString()))
+            //    dlgPop.Show("Information", msg);
             await GetWorkorders();
 
 
@@ -210,11 +195,19 @@
             Dictionary<string, object> param = new Dictionary<string, object>();
             var from = filterFrom.sfDateTimePicker.Value?.ToString("yyyy-MM-dd hh:mm:ss");
             var to = filterTo.sfDateTimePicker.Value?.ToString("yyyy-MM-dd hh:mm:ss");
-         
-            if (String.IsNullOrEmpty(from))                         
-                from = " ";          
-            if (String.IsNullOrEmpty(to))            
-                to = "  ";          
+            var msg = $"날짜입력필수입니다.";
+            if (String.IsNullOrEmpty(from))
+            {
+                dlgPop.Show("Information", msg);
+                return;
+            }
+
+            if (String.IsNullOrEmpty(to))
+            {
+                dlgPop.Show("Information", msg);
+                return;
+            }
+
             param.Add("from", from);
             param.Add("to", to);
 
@@ -246,10 +239,20 @@
             Dictionary<string, object> param = new Dictionary<string, object>();
             var from = filterFrom.sfDateTimePicker.Value?.ToString("yyyy-MM-dd hh:mm:ss");
             var to = filterTo.sfDateTimePicker.Value?.ToString("yyyy-MM-dd hh:mm:ss");
+            var msg = $"날짜입력필수입니다.";
             if (String.IsNullOrEmpty(from))
-                from = " ";
+            {
+
+                dlgPop.Show("Information", msg);
+                return;
+            }
+
             if (String.IsNullOrEmpty(to))
-                to = " ";
+            {
+                dlgPop.Show("Information", msg);
+                return;
+            }
+
             param.Add("from", from);
             param.Add("to", to);
             var lotid = filterLotId.fxTextBox.Value;
@@ -325,9 +328,12 @@
             public string PRODUCTDEFINITIONID { get; set; }
             public string PROCESSDEFINITIONID { get; set; }
             public string PROCESSSEGMENTID { get; set; }
-            public DateTime MODIFYTIME { get; set; }
+            public string PROCESSSEGMENTRULEID { get; set; }
             public string EQUIPMENTID { get; set; }
             public string EQUIPMENTNAME { get; set; }
+            public string PROCESSINGSTATE { get; set; }
+            public string TRACKINTIME { get; set; }
+            public string TRACKOUTTIME { get; set; }
 
         }
 
