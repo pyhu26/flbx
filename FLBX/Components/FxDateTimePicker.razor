@@ -4,12 +4,10 @@
 
     <SfDateTimePicker @ref="sfDateTimePicker"
                       Format="@DateFormat"
-                      TValue="DateTime?"                    
-                     
+                      TValue="DateTime?"
                       @bind-Value="@DateTimeValue"
-                      Placeholder="@Placeholder"                      
-                      >
-
+                      Placeholder="@Placeholder">
+        <DateTimePickerEvents TValue="DateTime?" ValueChange="ValueChangeHandler"></DateTimePickerEvents>
     </SfDateTimePicker>
 </div>
 
