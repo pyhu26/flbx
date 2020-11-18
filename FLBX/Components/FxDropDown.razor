@@ -10,7 +10,9 @@
                     Placeholder=@Placeholder
                     AllowFiltering="true"  
                     CssClass=@InnerCssClass
-                    PopupWidth=@PopupWidth>
+                    PopupWidth=@PopupWidth
+                    FilterType="FilterType.Contains"
+                    >
 
         <DropDownListTemplates TItem="DropDownModel">
             <ItemTemplate>
@@ -39,8 +41,7 @@
                 
             </ValueTemplate>*@
         </DropDownListTemplates>
-        <DropDownListFieldSettings Text="Id" Value="Name"></DropDownListFieldSettings>
-        
+        <DropDownListFieldSettings Text="Name" Value="Id"></DropDownListFieldSettings>
 
     </SfDropDownList>
 </div>
