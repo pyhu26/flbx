@@ -129,7 +129,7 @@
         FxSpinner fxSpinner;
         FxDropDown filterWorkOrder;
 
-        List<DropDownModel> Workorders { get; set; } = new List<DropDownModel>();
+        static List<DropDownModel> Workorders { get; set; } = new List<DropDownModel>();
         void Attach(RenderHandle renderHandle) { }
         List<TempLotModel> LotList { get; set; } = new List<TempLotModel>();
         List<TempLotHistModel> LotHist { get; set; } = new List<TempLotHistModel>();
@@ -149,28 +149,36 @@
 
         protected override void OnInitialized()
         {
-            //GridData = WorkOrderDetails.GetAllRecords();
-            //GridDataLot = Lot.GetAllRecords();
+
+            base.OnInitialized();
 
         }
-        void filterDateFrom_ValueChanged(ChangedEventArgs<DateTime?> args)
+
+        public async Task InitializePage()
+        {
+            Workorders.Clear();
+            LotList.Clear();
+            LotHist.Clear();
+            await GetWorkorders();
+        }
+        async Task filterDateFrom_ValueChanged(ChangedEventArgs<DateTime?> args)
         {
             //  dlgPop.Show("DateTime", args.Value.ToString());
             DateValueFrom = args.Value;
-            GetWorkorders();
-            //this.filterWorkOrder.sfDropDownList.AddItem(Workorders);
- 
-            sfdrop.AddItem(Workorders);
+            await GetWorkorders();
+
+
+
 
         }
-        void filterDateTo_ValueChanged(ChangedEventArgs<DateTime?> args)
+        async Task filterDateTo_ValueChanged(ChangedEventArgs<DateTime?> args)
         {
             //  dlgPop.Show("DateTime", args.Value.ToString());
             DateValueTo = args.Value;
-            GetWorkorders();
-            //this.filterWorkOrder.sfDropDownList.AddItem(Workorders);
+            await GetWorkorders();
 
-            sfdrop.AddItem(Workorders);
+
+
 
         }
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -182,19 +190,17 @@
             if (firstRender)
             {
 
-                //this.filterFrom.sfDateTimePicker.Value= DateTime.Now.AddDays(-14);
-                //this.filterTo.sfDateTimePicker.Value = DateTime.Now;
-
                 //Workorder 필터
                 await GetWorkorders();
                 //this.filterWorkOrder.sfDropDownList.AddItem(Workorders);
-                sfdrop.AddItem(Workorders);
+                //sfdrop.AddItem(Workorders);
                 StateHasChanged();
             }
         }
 
         private async Task GetWorkorders()
         {
+            Workorders.Clear();
             Dictionary<string, object> param = new Dictionary<string, object>();
             param.Add("from", filterFrom.sfDateTimePicker.Value?.ToString("yyyy-MM-dd hh:mm:ss"));
             param.Add("to", filterTo.sfDateTimePicker.Value?.ToString("yyyy-MM-dd hh:mm:ss"));
@@ -218,7 +224,7 @@
             ReplyMessage reply = task.Result;
 
             //Reply Message Binding
-            this.Workorders = JsonSerializer.Deserialize<List<DropDownModel>>(Convert.ToString(reply.ResultKeyValues["reply"]));
+            Workorders = JsonSerializer.Deserialize<List<DropDownModel>>(Convert.ToString(reply.ResultKeyValues["reply"]));
         }
 
         public async Task btnQuery_OnClickAsync()
@@ -235,6 +241,8 @@
             if (String.IsNullOrEmpty(lotname))
                 lotname = " ";
             param.Add("lotname", lotname);
+            if (String.IsNullOrEmpty(workorderid))
+                workorderid = " ";
             param.Add("workorderid", workorderid);
             //Query Message 생성
             QueryMessage queryMeasage = new QueryMessage()
